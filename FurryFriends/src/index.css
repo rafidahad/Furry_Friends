@@ -1,0 +1,12 @@
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
+.Container{
+  width:100vw;
+  min-height: 100vh;
+  background: #ced8ff;
+}

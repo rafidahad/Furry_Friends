@@ -1,0 +1,17 @@
+# Root-level node_modules
+FurryFriends/node_modules/
+
+# Backend node_modules
+FurryFriendsBackend/node_modules/
+
+# Environment variables
+.env
+FurryFriendsBackend/.env
+
+# Optional: Ignore build outputs
+dist/
+build/
+
+# Optional: Ignore log files
+*.log
+logs/

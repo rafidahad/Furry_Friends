@@ -1,0 +1,114 @@
+/* LoginSignUp.css */
+
+/* Container for the login/signup wrapper */
+.login-wrapper {
+    max-width: 400px;
+    width: 100%;
+    background-color: var(--login-bg, #fff);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Header section styles */
+  .login-header,
+  .signup-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .login-header img,
+  .signup-header img {
+    max-height: 80px;
+    margin-bottom: 1rem;
+  }
+  
+  .header-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4a90e2;
+    margin-bottom: 0.5rem;
+  }
+  
+  .underline {
+    height: 4px;
+    width: 50px;
+    background-color: #4a90e2;
+    margin: 0 auto;
+  }
+  
+  /* Input container for each input field */
+  .input {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .input img {
+    width: 24px;
+    margin-right: 0.5rem;
+  }
+  
+  .input input {
+    flex: 1;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+  }
+  
+  /* Forgot password styling */
+  .forgot-password {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .forgot-password span {
+    text-decoration: underline;
+    cursor: pointer;
+    color: #4a90e2;
+  }
+  
+  /* Submit container styling */
+  .submit-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Style for buttons */
+  .btn-custom {
+    text-transform: none;
+    font-weight: bold;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  /* Gradient for the Login/Signup buttons */
+  .btn-login {
+    background: linear-gradient(45deg, #4a90e2 30%, #50b3ff 90%);
+    color: white;
+  }
+  
+  .btn-login:hover {
+    background: linear-gradient(45deg, #50b3ff 30%, #4a90e2 90%);
+  }
+  
+  /* Gradient for the Sign Up (or Login link) button */
+  .btn-link {
+    background: linear-gradient(45deg, #ff8e53 30%, #fe6b8b 90%);
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s;
+  }
+  
+  .btn-link:hover {
+    background: linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%);
+  }
+  
