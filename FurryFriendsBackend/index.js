@@ -1,23 +1,33 @@
+// index.js
+import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-import "dotenv/config"; // Works if using ESM (type: "module" in package.json)
+import cors from "cors"; // Import cors
+import userRouter from "./routes/userRouters.js";
+import authRouter from "./routes/authRoutes.js";
 
-const PORT = process.env.PORT;
-const DB_URL = process.env.DB_URL;
+dotenv.config();
+const app = express();
 
-console.log("DB_URL:", DB_URL); // Add these to debug
-console.log("PORT:", PORT);
+// Enable CORS for all routes
+app.use(cors());
+
+app.use(express.json());
+
+// Mount user routes
+app.use("/users", userRouter);
+// Mount authentication routes
+app.use("/auth", authRouter);
 
 mongoose
-  .connect(DB_URL)
-  .then(() => console.log("Database Connected"))
-  .catch((err) => console.log(`Error connecting to Database ${err}`));
+  .connect(process.env.DB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connected."))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-const app = express();
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "THIS IS API" });
-});
-
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

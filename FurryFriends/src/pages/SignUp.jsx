@@ -17,6 +17,7 @@ import {
   Link as MuiLink
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import furryLogo from '../assets/furryFriends_header_logo.png';
 
 export default function SignupFacebookStyle() {
@@ -31,16 +32,35 @@ export default function SignupFacebookStyle() {
     emailOrPhone: '',
     password: '',
   });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Redirect to OTP page when sign up button is pressed
-    navigate('/otp');
+    setError('');
+    try {
+      // Send a POST request to the backend signup endpoint
+      const res = await axios.post('http://localhost:27017/users', {
+        firstName: formData.firstName,
+        surname: formData.surname,
+        emailOrPhone: formData.emailOrPhone,
+        password: formData.password,
+        day: formData.day,
+        month: formData.month,
+        year: formData.year,
+        gender: formData.gender,
+      });
+      console.log("User created:", res.data);
+      // On success, redirect to the OTP page
+      navigate('/otp');
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError(err.response?.data?.error || 'Signup failed. Please try again.');
+    }
   };
 
   return (
@@ -54,7 +74,7 @@ export default function SignupFacebookStyle() {
         p: 2,
       }}
     >
-      {/* Logo at the top */}
+      {/* Website Logo */}
       <img 
         src={furryLogo} 
         alt="Website Logo" 
@@ -72,6 +92,11 @@ export default function SignupFacebookStyle() {
           >
             It’s quick and easy.
           </Typography>
+          {error && (
+            <Typography variant="body2" color="error" sx={{ textAlign: 'center', mb: 2 }}>
+              {error}
+            </Typography>
+          )}
           <Box component="form" onSubmit={handleSubmit}>
             {/* First name and surname */}
             <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
@@ -190,7 +215,7 @@ export default function SignupFacebookStyle() {
               onChange={handleChange}
             />
 
-            {/* Disclaimer text (optional) */}
+            {/* Disclaimer text */}
             <Typography variant="caption" sx={{ display: 'block', mb: 2, color: 'text.secondary' }}>
               People who use our service may have uploaded your contact information to FurryFriends. Learn more.
               <br />
@@ -208,7 +233,7 @@ export default function SignupFacebookStyle() {
               Sign Up
             </Button>
 
-            {/* Already have an account? -> redirect to /login */}
+            {/* Already have an account? */}
             <Box sx={{ textAlign: 'center' }}>
               <MuiLink
                 component={RouterLink}
