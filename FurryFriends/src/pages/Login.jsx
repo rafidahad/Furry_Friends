@@ -137,7 +137,7 @@ function Login() {
                 boxShadow: '0px 3px 5px rgba(0,0,0,0.2)',
               }}
             >
-              Sign Up
+              Create an Account
             </Link>
             <Button
               type="submit"

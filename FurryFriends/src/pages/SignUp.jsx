@@ -1,152 +1,227 @@
-// src/pages/Signup.jsx
-import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Box, Button, Typography } from '@mui/material';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import './LoginSignUp.css';
-import user_icon from '../Assets/person.png';
-import email_icon from '../Assets/email.png';
-import password_icon from '../Assets/password.png';
+// src/pages/SignupFacebookStyle.jsx
+import React, { useState } from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Link as MuiLink
+} from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import furryLogo from '../assets/furryFriends_header_logo.png';
-import LoadingScreen from './LoadingScreen';
 
-function Signup () {
+export default function SignupFacebookStyle() {
   const navigate = useNavigate();
-  const [loading, setLoading] = React.useState(false);
-
-  const validationSchema = Yup.object({
-    name: Yup.string().required('Name is required'),
-    email: Yup.string().email('Invalid email format').required('Email is required'),
-    password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+  const [formData, setFormData] = useState({
+    firstName: '',
+    surname: '',
+    day: '1',
+    month: 'Jan',
+    year: '2000',
+    gender: 'Female',
+    emailOrPhone: '',
+    password: '',
   });
 
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-      email: '',
-      password: '',
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      setLoading(true);
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
-    },
-  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  if (loading) return <LoadingScreen />;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Redirect to OTP page when sign up button is pressed
+    navigate('/otp');
+  };
 
   return (
     <Box
       sx={{
+        backgroundColor: '#f0f2f5',
         minHeight: '100vh',
-        backgroundColor: 'background.default',
-        color: 'text.primary',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
         p: 2,
       }}
     >
-      <div className="login-wrapper">
-        <div className="header text-center">
-          <img 
-            src={furryLogo} 
-            alt="Website Logo" 
-            className="img-fluid mb-3" 
-            style={{ maxHeight: '80px' }} 
-          />
-          <Typography variant="h3" className="header-title">
-            Sign Up
+      {/* Logo at the top */}
+      <img 
+        src={furryLogo} 
+        alt="Website Logo" 
+        style={{ maxHeight: '80px', marginBottom: '20px' }} 
+      />
+
+      <Card sx={{ width: 432, borderRadius: 2 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center' }}>
+            Create a new account
           </Typography>
-          <div className="underline mb-4"></div>
-        </div>
-        <form onSubmit={formik.handleSubmit} className="inputs">
-          <div className="input mb-3 d-flex align-items-center">
-            <img src={user_icon} alt="User Icon" style={{ width: '24px', marginRight: '8px' }} />
-            <input 
-              type="text" 
-              name="name" 
-              placeholder="Enter Name" 
-              value={formik.values.name} 
-              onChange={formik.handleChange} 
-              onBlur={formik.handleBlur}
-              className="form-control" 
-            />
-            {formik.touched.name && formik.errors.name ? (
-            <div style={{ color: 'red' }}>{formik.errors.name}</div>
-          ) : null}
-          </div>
-          <div className="input mb-3 d-flex align-items-center">
-            <img src={email_icon} alt="Email Icon" style={{ width: '24px', marginRight: '8px' }} />
-            <input 
-              type="email" 
-              name="email" 
-              placeholder="Enter E-mail" 
-              value={formik.values.email} 
-              onChange={formik.handleChange} 
-              onBlur={formik.handleBlur}
-              className="form-control" 
-            />
-           {formik.touched.email && formik.errors.email ? (
-            <div style={{ color: 'red' }}>{formik.errors.email}</div>
-          ) : null}
-          </div>
-          <div className="input mb-3 d-flex align-items-center">
-            <img src={password_icon} alt="Password Icon" style={{ width: '24px', marginRight: '8px' }} />
-            <input 
-              type="password" 
-              name="password" 
-              placeholder="Enter Password" 
-              value={formik.values.password} 
-              onChange={formik.handleChange} 
-              onBlur={formik.handleBlur}
-              className="form-control" 
-            />
-            {formik.touched.password && formik.errors.password ? (
-            <div style={{ color: 'red' }}>{formik.errors.password}</div>
-          ) : null}
-          </div>
-          <div className="submit-container d-flex justify-content-between">
-            <Link
-              to="/"
-              className="btn"
-              style={{
-                background: 'linear-gradient(45deg, #4a90e2 30%, #50b3ff 90%)',
-                color: 'white',
-                textTransform: 'none',
-                fontWeight: 'bold',
-                boxShadow: '0px 3px 5px rgba(0,0,0,0.2)',
-                borderRadius: '4px',
-                padding: '0.5rem 1rem',
-                textDecoration: 'none',
-              }}
+          <Typography
+            variant="subtitle1"
+            sx={{ color: 'text.secondary', textAlign: 'center', mb: 2 }}
+          >
+            It’s quick and easy.
+          </Typography>
+          <Box component="form" onSubmit={handleSubmit}>
+            {/* First name and surname */}
+            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+              <TextField
+                name="firstName"
+                label="First name"
+                variant="outlined"
+                size="small"
+                fullWidth
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+              <TextField
+                name="surname"
+                label="Surname"
+                variant="outlined"
+                size="small"
+                fullWidth
+                value={formData.surname}
+                onChange={handleChange}
+              />
+            </Box>
+
+            {/* Date of birth */}
+            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+              <FormControl size="small" fullWidth>
+                <InputLabel id="day-label">Day</InputLabel>
+                <Select
+                  labelId="day-label"
+                  name="day"
+                  label="Day"
+                  value={formData.day}
+                  onChange={handleChange}
+                >
+                  {[...Array(31)].map((_, i) => (
+                    <MenuItem key={i} value={String(i + 1)}>
+                      {i + 1}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl size="small" fullWidth>
+                <InputLabel id="month-label">Month</InputLabel>
+                <Select
+                  labelId="month-label"
+                  name="month"
+                  label="Month"
+                  value={formData.month}
+                  onChange={handleChange}
+                >
+                  {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m) => (
+                    <MenuItem key={m} value={m}>
+                      {m}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl size="small" fullWidth>
+                <InputLabel id="year-label">Year</InputLabel>
+                <Select
+                  labelId="year-label"
+                  name="year"
+                  label="Year"
+                  value={formData.year}
+                  onChange={handleChange}
+                >
+                  {Array.from({ length: 70 }, (_, i) => 2025 - i).map((y) => (
+                    <MenuItem key={y} value={String(y)}>
+                      {y}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+
+            {/* Gender */}
+            <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+              Gender
+            </Typography>
+            <RadioGroup
+              row
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              sx={{ justifyContent: 'space-between', mb: 2 }}
             >
-              Login
-            </Link>
+              <FormControlLabel value="Female" control={<Radio />} label="Female" />
+              <FormControlLabel value="Male" control={<Radio />} label="Male" />
+              <FormControlLabel value="Custom" control={<Radio />} label="Custom" />
+            </RadioGroup>
+
+            {/* Mobile or email */}
+            <TextField
+              name="emailOrPhone"
+              label="Mobile number or email address"
+              variant="outlined"
+              size="small"
+              fullWidth
+              sx={{ mb: 2 }}
+              value={formData.emailOrPhone}
+              onChange={handleChange}
+            />
+
+            {/* Password */}
+            <TextField
+              name="password"
+              label="New password"
+              variant="outlined"
+              size="small"
+              type="password"
+              fullWidth
+              sx={{ mb: 2 }}
+              value={formData.password}
+              onChange={handleChange}
+            />
+
+            {/* Disclaimer text (optional) */}
+            <Typography variant="caption" sx={{ display: 'block', mb: 2, color: 'text.secondary' }}>
+              People who use our service may have uploaded your contact information to FurryFriends. Learn more.
+              <br />
+              By clicking Sign Up, you agree to our Terms, Data Policy and Cookies Policy. You may receive SMS notifications from us and can opt out at any time.
+            </Typography>
+
+            {/* Sign Up button */}
             <Button
               type="submit"
-              className="btn-custom btn-login"
-              sx={{
-                background: 'linear-gradient(45deg, #ff8e53 30%, #fe6b8b 90%)',
-                color: 'white',
-                textTransform: 'none',
-                fontWeight: 'bold',
-                boxShadow: '0px 3px 5px rgba(0,0,0,0.2)',
-                '&:hover': {
-                  background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)',
-                },
-              }}
+              variant="contained"
+              color="success"
+              fullWidth
+              sx={{ fontWeight: 'bold', textTransform: 'none', mb: 2 }}
             >
               Sign Up
             </Button>
-          </div>
-        </form>
-      </div>
+
+            {/* Already have an account? -> redirect to /login */}
+            <Box sx={{ textAlign: 'center' }}>
+              <MuiLink
+                component={RouterLink}
+                to="/"
+                underline="hover"
+                sx={{ fontSize: 14 }}
+              >
+                Already have an account?
+              </MuiLink>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
     </Box>
   );
-};
-
-export default Signup;
+}

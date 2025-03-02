@@ -11,6 +11,7 @@ import AdoptionPage from './pages/AdoptionPage'; //
 import Popular from './pages/Popular';
 import AdoptAPetPage from './pages/AdoptAPetPage';
 import MyProfile from './pages/MyProfile';
+import OtpPage from './pages/OtpPage';
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -32,6 +33,7 @@ const App = () => {
           <Route path="/popular" element={<Popular />} />
           <Route path="/adopt_a_pet" element={<AdoptAPetPage />} />
           <Route path="/myprofile" element={<MyProfile />} />
+          <Route path="/otp" element={<OtpPage />} />
         </Routes>
       </Router>
     </ThemeProvider>
