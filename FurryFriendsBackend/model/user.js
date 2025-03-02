@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
 const userSchema = new Schema({
+  username: { type: String, required: true, unique: true }, // New username field
   emailOrPhone: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
   verified: { type: Boolean, default: false },
