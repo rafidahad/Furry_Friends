@@ -8,13 +8,14 @@ const userSchema = new Schema({
   passwordHash: { type: String, required: true },
   verified: { type: Boolean, default: false },
 
-  // Fields for OTP-based verification
+  // OTP fields
   otpCode: { type: String, default: null },
   otpExpires: { type: Date, default: null },
 
   // Additional fields
-  firstName: String,
-  surname: String,
+  firstName: { type: String, required: true },
+  surname: { type: String, required: true },
+
   profile: {
     dob: {
       day: Number,
@@ -31,6 +32,9 @@ const userSchema = new Schema({
     type: String,
     enum: ["user", "admin"],
     default: "user",
+  },
+  settings: {
+    notifications: { type: Boolean, default: true },
   },
 });
 

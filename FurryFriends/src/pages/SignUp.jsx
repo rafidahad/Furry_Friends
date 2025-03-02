@@ -43,8 +43,8 @@ export default function SignupFacebookStyle() {
     e.preventDefault();
     setError('');
     try {
-      // Send a POST request to the backend signup endpoint
-      const res = await axios.post('http://localhost:27017/users', {
+      // Use the correct endpoint with port 3000
+      const res = await axios.post('http://localhost:3000/auth/signup', {
         firstName: formData.firstName,
         surname: formData.surname,
         emailOrPhone: formData.emailOrPhone,

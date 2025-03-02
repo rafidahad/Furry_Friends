@@ -58,7 +58,7 @@ export const signupUser = async (req, res) => {
     // Generate OTP and set expiration (15 minutes from now)
     const otp = generateOTP();
     newUser.otpCode = otp;
-    newUser.otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    newUser.otpExpires = new Date(Date.now() + 15 * 60 * 1000);
 
     // Save the user
     await newUser.save();
@@ -71,9 +71,7 @@ export const signupUser = async (req, res) => {
       text: `Your verification code is: ${otp}`,
     });
 
-    return res
-      .status(201)
-      .json({ message: "Signup successful. OTP sent via email." });
+    return res.status(201).json({ message: "Signup successful. OTP sent via email." });
   } catch (error) {
     console.error("Error during signup:", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -89,7 +87,6 @@ export const verifyOTP = async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    // Validate OTP and check expiration
     if (
       user.otpCode !== otpCode ||
       !user.otpExpires ||
@@ -98,7 +95,6 @@ export const verifyOTP = async (req, res) => {
       return res.status(400).json({ error: "Invalid or expired OTP." });
     }
 
-    // Mark user as verified and clear OTP fields
     user.verified = true;
     user.otpCode = null;
     user.otpExpires = null;
@@ -114,32 +110,24 @@ export const verifyOTP = async (req, res) => {
 // POST /auth/login
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body; // 'email' corresponds to emailOrPhone in our model
+    const { email, password } = req.body; // 'email' corresponds to emailOrPhone
 
-    // Find the user
     const user = await User.findOne({ emailOrPhone: email });
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
 
-    // Ensure user is verified
     if (!user.verified) {
-      return res
-        .status(403)
-        .json({ error: "User not verified. Please verify OTP." });
+      return res.status(403).json({ error: "User not verified. Please verify OTP." });
     }
 
-    // Check password
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
 
-    // Generate JWT token
     const payload = { id: user._id, email: user.emailOrPhone, role: user.role };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     return res.status(200).json({ token });
   } catch (error) {
