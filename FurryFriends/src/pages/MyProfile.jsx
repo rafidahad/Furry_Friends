@@ -1,170 +1,145 @@
-// src/pages/MyProfile.jsx
-import React, { useState } from 'react';
-import { Box, Drawer, Avatar, Button, Typography, Card, CardContent, TextField } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import React, { useEffect, useState } from "react";
+import { Box, Drawer, Avatar, Button, Typography, Card, CardContent, TextField } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api"; // ✅ Import API service
 
-
-import Navbar from '../components/Navbar';
-import LeftSidebarDesktop from '../components/LeftSidebarDesktop';
-import LeftSidebar from '../components/LeftSidebar';
+import Navbar from "../components/Navbar";
+import LeftSidebarDesktop from "../components/LeftSidebarDesktop";
+import LeftSidebar from "../components/LeftSidebar";
 
 const MyProfile = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [postContent, setPostContent] = useState('');
+  const [postContent, setPostContent] = useState("");
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
   const theme = useTheme();
+  const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
 
-  // For desktop vs. mobile sidebars
-  const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
-  const isLgUp = useMediaQuery(theme.breakpoints.up('lg'));
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get("/auth/profile", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setUser(response.data);
+      } catch (error) {
+        navigate("/login"); // ✅ Redirect to login if not authenticated
+      }
+    };
+    fetchProfile();
+  }, [navigate]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleCreatePost = () => {
-    // Implement your create-post logic here (e.g. API call)
+  const handleCreatePost = async () => {
     if (postContent.trim()) {
-      console.log('Post created:', postContent);
-      setPostContent('');
+      try {
+        await api.post("/posts/create", { content: postContent }, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setPostContent("");
+        alert("Post created successfully!");
+      } catch (error) {
+        alert("Error creating post.");
+      }
     }
   };
 
-  // Example user data (replace with real data)
-  const userData = {
-    username: 'u/your_username',
-    avatar: 'https://via.placeholder.com/100.png?text=My+Avatar',
-    followers: 12,
-    posts: 5,
-    communities: ['r/Dogs', 'r/Cats', 'r/Birds'],
-  };
-
   return (
-    <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
-      {/* Navbar with search bar visible */}
+    <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: "100vh" }}>
+      {/* Navbar */}
       <Navbar onMenuClick={handleDrawerToggle} showSearch={true} />
 
-      {/* Desktop Left Sidebar */}
+      {/* Desktop Sidebar */}
       {isMdUp && <LeftSidebarDesktop in={isMdUp} />}
 
-      {/* Mobile Drawer for Left Sidebar */}
+      {/* Mobile Drawer */}
       {!isMdUp && (
-        <Drawer
-          anchor="left"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-        >
+        <Drawer anchor="left" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }}>
           <LeftSidebar />
         </Drawer>
       )}
 
-      {/* Main Content Area */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', pt: '64px' }}>
-        <Box
-          component="main"
-          sx={{
-            flex: 1,
-            marginLeft: { xs: 0, md: '240px' },
-            p: 2,
-            maxWidth: '800px',
-          }}
-        >
-          {/* User Info Card */}
-          <Card sx={{ mb: 2 }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar
-                  alt="My Avatar"
-                  src={userData.avatar}
-                  sx={{ width: 64, height: 64, mr: 2 }}
-                />
-                <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                    {userData.username}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Welcome back!
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* Stats */}
-              <Box sx={{ display: 'flex', gap: 4, mb: 2 }}>
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Followers
-                  </Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {userData.followers}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Posts
-                  </Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {userData.posts}
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* List of communities */}
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                My Communities
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {userData.communities.map((comm) => (
-                  <Box
-                    key={comm}
-                    sx={{
-                      backgroundColor: theme.palette.background.paper,
-                      border: `1px solid ${theme.palette.divider}`,
-                      borderRadius: 2,
-                      px: 2,
-                      py: 0.5,
-                    }}
-                  >
-                    <Typography variant="body2">{comm}</Typography>
+      {/* Main Content */}
+      <Box sx={{ display: "flex", justifyContent: "center", pt: "64px" }}>
+        <Box component="main" sx={{ flex: 1, marginLeft: { xs: 0, md: "240px" }, p: 2, maxWidth: "800px" }}>
+          {user ? (
+            <>
+              {/* User Info Card */}
+              <Card sx={{ mb: 2 }}>
+                <CardContent>
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                    <Avatar alt="Profile Picture" src={user.profilePicture} sx={{ width: 64, height: 64, mr: 2 }} />
+                    <Box>
+                      <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                        {user.firstName} {user.surname}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {user.email}
+                      </Typography>
+                    </Box>
                   </Box>
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
 
-          {/* Create Post Card */}
-          <Card sx={{ mb: 2 }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                Create a Post
-              </Typography>
-              <TextField
-                multiline
-                rows={3}
-                fullWidth
-                placeholder="What's on your mind?"
-                value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-              <Button
-                variant="contained"
-                onClick={handleCreatePost}
-                disabled={!postContent.trim()}
-              >
-                Post
-              </Button>
-            </CardContent>
-          </Card>
+                  {/* Stats */}
+                  <Box sx={{ display: "flex", gap: 4, mb: 2 }}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Followers
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        {user.followers.length}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Following
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        {user.following.length}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Posts
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        {user.postsCount}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
 
-          {/* Placeholder for user’s own posts */}
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="body1">
-                You have {userData.posts} posts. (Display them here or show a placeholder if none.)
-              </Typography>
-            </CardContent>
-          </Card>
+              {/* Create Post Card */}
+              <Card sx={{ mb: 2 }}>
+                <CardContent>
+                  <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+                    Create a Post
+                  </Typography>
+                  <TextField
+                    multiline
+                    rows={3}
+                    fullWidth
+                    placeholder="What's on your mind?"
+                    value={postContent}
+                    onChange={(e) => setPostContent(e.target.value)}
+                    sx={{ mb: 2 }}
+                  />
+                  <Button variant="contained" onClick={handleCreatePost} disabled={!postContent.trim()}>
+                    Post
+                  </Button>
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            <Typography variant="h6" sx={{ textAlign: "center", mt: 4 }}>
+              Loading profile...
+            </Typography>
+          )}
         </Box>
       </Box>
     </Box>

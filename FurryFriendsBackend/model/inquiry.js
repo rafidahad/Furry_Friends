@@ -1,5 +1,5 @@
 // model/inquiry.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const inquirySchema = new mongoose.Schema({
   userId: {
@@ -13,4 +13,4 @@ const inquirySchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Inquiry", inquirySchema);
+export default model("Inquiry", inquirySchema);

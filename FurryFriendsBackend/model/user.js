@@ -31,6 +31,11 @@ const userSchema = new Schema({
     profilePicture: { type: String, default: "default-profile.png" },
     joinedAt: { type: Date, default: Date.now, immutable: true },
   },
+
+  // ✅ Followers & Following fields
+  followers: [{ type: Schema.Types.ObjectId, ref: "User" }], // Users following this user
+  following: [{ type: Schema.Types.ObjectId, ref: "User" }], // Users this user follows
+
   role: { type: String, enum: ["user", "admin"], default: "user" },
   settings: {
     notifications: { type: Boolean, default: true },
