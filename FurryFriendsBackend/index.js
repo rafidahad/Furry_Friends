@@ -5,18 +5,23 @@ import mongoose from "mongoose";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import userPostRoutes from "./routes/userPostRoutes.js";
 // You can also mount other routes (e.g., userRoutes) as needed
 
 dotenv.config();
 const app = express();
 
 // Enable CORS for all routes
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cors());
 app.use(express.json());
 
 // Mount auth routes
 app.use("/auth", authRoutes);
 app.use("/upload", uploadRoutes);
+app.use("/posts", userPostRoutes); 
 
 mongoose
   .connect(process.env.DB_URL)

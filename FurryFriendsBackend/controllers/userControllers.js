@@ -103,8 +103,8 @@ export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id)
       .select("-passwordHash")
-      .populate("followers", "username firstName surname profilePicture")
-      .populate("following", "username firstName surname profilePicture");
+      .populate("followers", "username profile.profilePicture")
+      .populate("following", "username profile.profilePicture");
 
     if (!user) return res.status(404).json({ error: "User not found" });
 
@@ -114,6 +114,7 @@ export const getProfile = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 /**
  * ✅ UPDATE User Profile

@@ -1,12 +1,12 @@
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import cloudinary from "../utils/cloudinary.js"; // ✅ Correct import
+import cloudinary from "../utils/cloudinary.js";
 
 // ✅ Configure Cloudinary storage for Profile Pictures
 const profilePictureStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: "furry_friends/profile_pictures", // ✅ Dedicated folder for profile pictures
+    folder: "furry_friends/profile_pictures",
     allowed_formats: ["jpg", "png", "jpeg"],
     resource_type: "image",
   },
