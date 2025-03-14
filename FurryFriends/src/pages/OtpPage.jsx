@@ -1,26 +1,34 @@
-// src/pages/OtpPage.jsx
 import React, { useState } from 'react';
 import { Box, AppBar, Toolbar, Card, CardContent, Typography, TextField, Button } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import api from '../services/api';
 import furryLogo from '../assets/furryFriends_header_logo.png';
 
 export default function OtpPage() {
   const [otp, setOtp] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || '';
 
   const handleChange = (e) => setOtp(e.target.value);
-  const handleVerify = () => {
-    alert(`Verifying OTP: ${otp}`);
-    // Here you would add your OTP verification logic
+
+  const handleVerify = async () => {
+    try {
+      await api.post('/auth/verify-otp', { email, otpCode: otp });
+      alert('OTP verified successfully!');
+      navigate('/home'); // ✅ Redirect to home page after successful verification
+    } catch (err) {
+      alert('Invalid or expired OTP.');
+    }
   };
 
   const handleCancel = () => {
-    alert('Cancel clicked!');
-    // Add cancel logic or redirect as needed
+    navigate('/signup'); // ✅ Redirect back to signup if user cancels
   };
 
   return (
     <Box sx={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
-      {/* Top AppBar with your website logo */}
+      {/* Top AppBar with Logo */}
       <AppBar position="static" sx={{ backgroundColor: '#fff', boxShadow: 'none', borderBottom: '1px solid #ddd' }}>
         <Toolbar>
           <img src={furryLogo} alt="Website Logo" style={{ height: '40px' }} />
@@ -28,15 +36,7 @@ export default function OtpPage() {
       </AppBar>
 
       {/* Main Content */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          pt: 5,
-          pb: 5,
-        }}
-      >
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', pt: 5, pb: 5 }}>
         <Card sx={{ width: 500, maxWidth: '90%', mt: 5 }}>
           <CardContent sx={{ p: 4 }}>
             <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
@@ -45,7 +45,7 @@ export default function OtpPage() {
             <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
               Please check your emails for a message with your code. Your code is 6 numbers long.
               <br />
-              We sent your code to <strong>****@gmail.com</strong>
+              We sent your code to <strong>{email ? email.replace(/(.{2}).*(@.*)/, '$1****$2') : 'your email'}</strong>
             </Typography>
             <TextField
               label="Enter code"

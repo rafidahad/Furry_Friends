@@ -111,4 +111,47 @@
   .btn-link:hover {
     background: linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%);
   }
-  
+  /* Ensure the Day, Month, Year fields are properly spaced */
+/* Fix the spacing for the Date of Birth fields */
+.dob-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.dob-container .MuiFormControl-root {
+  flex: 1; /* Make all three fields take equal space */
+  min-width: 0; /* Prevent them from expanding too much */
+}
+
+.dob-container .MuiInputBase-root {
+  padding: 5px;
+}
+
+
+/* Sign Up Button */
+.signup-btn {
+  background: linear-gradient(45deg, #ff8e53 30%, #fe6b8b 90%);
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 10px;
+  text-transform: none;
+}
+
+.signup-btn:hover {
+  background: linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%);
+}
+/* Centering the form properly */
+.login-wrapper {
+  max-width: 400px;
+  width: 100%;
+  background-color: var(--login-bg, #fff);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: auto; /* ✅ Centers it */
+  text-align: center;
+}

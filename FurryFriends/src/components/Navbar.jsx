@@ -18,8 +18,8 @@ const Navbar = ({ onMenuClick, toggleTheme, darkMode, showSearch = true }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Implement any logout logic here (e.g., clearing tokens)
-    navigate("/"); // Redirect to home route
+    localStorage.removeItem("token"); // ✅ Clear JWT Token
+    navigate("/"); // ✅ Redirect to Login
   };
 
   return (
@@ -37,10 +37,10 @@ const Navbar = ({ onMenuClick, toggleTheme, darkMode, showSearch = true }) => {
             src={furryLogo}
             alt="Furry Friends Logo"
             sx={{ height: 60, width: 'auto', cursor: 'pointer' }}
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/home")}
           />
         </Box>
-        {/* Middle: Either the Search Bar or a Home link with icon */}
+        {/* Middle: Either the Search Bar or a Home link */}
         {showSearch ? (
           <Box
             sx={{
