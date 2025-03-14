@@ -2,6 +2,7 @@ import User from "../model/user.js"; // ✅ Corrected import
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import transporter from "../utils/email.js";
+import cloudinary from "../utils/cloudinary.js";
  // ✅ Ensure this is configured
 import dotenv from "dotenv";
 
@@ -18,52 +19,61 @@ export const signupUser = async (req, res) => {
   try {
     console.log("Signup request received:", req.body);
 
-    const { username, email, password, firstName, surname } = req.body;
-    if (!username || !email || !password) {
-      return res.status(400).json({ error: "All fields are required." });
-    }
-
-    // Check if user exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser)
-      return res.status(400).json({ error: "User already exists." });
-
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    // Generate OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpires = new Date(Date.now() + 15 * 60 * 1000);
-
-    // Create new user
-    const newUser = new User({
+    const {
       username,
-      email,
-      passwordHash,
       firstName,
       surname,
-      otpCode,
-      otpExpires,
-      verified: false, // User is not verified until OTP is confirmed
+      email,
+      password,
+      bio,
+      profilePicture,
+      gender,
+      dob,
+    } = req.body;
+
+    if (!username || !email || !password) {
+      return res
+        .status(400)
+        .json({ error: "All required fields must be filled." });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists." });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      username,
+      firstName,
+      surname,
+      email,
+      passwordHash,
+      profile: {
+        dob: {
+          day: Number(dob.day),
+          month: dob.month,
+          year: Number(dob.year),
+        },
+        gender,
+        bio,
+        profilePicture,
+      },
     });
 
     await newUser.save();
 
-    // Send OTP via email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Your OTP Code",
-      text: `Your OTP code is: ${otpCode}. It expires in 15 minutes.`,
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
     });
 
-    res.status(201).json({ message: "Signup successful. OTP sent to email." });
+    res.status(201).json({ message: "Signup successful!", token });
   } catch (error) {
     console.error("Signup Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 /**
  * @route   POST /auth/verify-otp
@@ -138,6 +148,34 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const resendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) return res.status(404).json({ error: "User not found." });
+
+    // Generate new OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otpCode = otpCode;
+    user.otpExpires = new Date(Date.now() + 15 * 60 * 1000); // OTP expires in 15 mins
+    await user.save();
+
+    // Send new OTP via email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your New OTP Code",
+      text: `Your new OTP code is: ${otpCode}. It expires in 15 minutes.`,
+    });
+
+    res.status(200).json({ message: "New OTP sent successfully!" });
+  } catch (error) {
+    console.error("Resend OTP Error:", error);
+    res.status(500).json({ error: "Failed to resend OTP." });
+  }
+};
+
 
 /**
  * @route   POST /auth/reset-password

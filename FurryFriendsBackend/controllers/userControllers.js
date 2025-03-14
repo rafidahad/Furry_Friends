@@ -121,53 +121,36 @@ export const getProfile = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
   try {
-    const {
-      firstName,
-      surname,
-      email,
-      password,
-      day,
-      month,
-      year,
-      gender,
-      location,
-      bio,
-      profilePicture,
-    } = req.body;
+    console.log("Profile Update Request:", req.body);
 
-    const updateData = {};
-    if (firstName) updateData.firstName = firstName;
-    if (surname) updateData.surname = surname;
-    if (email) updateData.email = email;
-    if (gender) updateData.profile = { ...updateData.profile, gender };
-    if (location) updateData.profile = { ...updateData.profile, location };
-    if (bio) updateData.profile = { ...updateData.profile, bio };
-    if (profilePicture)
-      updateData.profile = { ...updateData.profile, profilePicture };
-    if (day && month && year) {
-      updateData.profile = {
-        ...updateData.profile,
-        dob: { day: Number(day), month, year: Number(year) },
-      };
-    }
+    const { username, bio, profilePicture, gender, dob } = req.body;
 
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      updateData.passwordHash = await bcrypt.hash(password, salt);
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, updateData, {
-      new: true,
-    });
+    // ✅ Ensure profile data is updated correctly
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        username,
+        $set: {
+          "profile.bio": bio,
+          "profile.profilePicture": profilePicture,
+          "profile.gender": gender,
+          "profile.dob": dob,
+        },
+      },
+      { new: true, runValidators: true }
+    ).select("-passwordHash");
 
     if (!updatedUser) return res.status(404).json({ error: "User not found" });
 
+    console.log("Updated User Data:", updatedUser);
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Update Profile Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
 
 /**
  * ✅ DELETE User Account

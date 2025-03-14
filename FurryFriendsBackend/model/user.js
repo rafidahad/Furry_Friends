@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 
 const userSchema = new Schema({
   username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true }, // ✅ Only email, no phone number
+  email: { type: String, required: true, unique: true }, // ✅ Email only (No phone)
   passwordHash: { type: String, required: true },
   verified: { type: Boolean, default: false },
 
@@ -17,24 +17,18 @@ const userSchema = new Schema({
   surname: { type: String, required: true },
   profile: {
     dob: {
-      day: Number,
-      month: String,
-      year: Number,
+      day: { type: Number, required: true },
+      month: { type: String, required: true },
+      year: { type: Number, required: true },
     },
-    gender: {
-      type: String,
-      enum: ["Male", "Female", "Other"],
-      default: "Other",
-    },
-    location: String,
-    bio: String,
+    gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
+    bio: { type: String, default: "" },
     profilePicture: { type: String, default: "default-profile.png" },
-    joinedAt: { type: Date, default: Date.now, immutable: true },
   },
 
-  // ✅ Followers & Following fields
-  followers: [{ type: Schema.Types.ObjectId, ref: "User" }], // Users following this user
-  following: [{ type: Schema.Types.ObjectId, ref: "User" }], // Users this user follows
+  // Followers & Following
+  followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  following: [{ type: Schema.Types.ObjectId, ref: "User" }],
 
   role: { type: String, enum: ["user", "admin"], default: "user" },
   settings: {

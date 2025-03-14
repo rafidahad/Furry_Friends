@@ -9,25 +9,32 @@ dotenv.config();
  */
 export const protect = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1]; // ✅ Extract token
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    // ✅ Ensure authorization header is present
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res
         .status(401)
         .json({ error: "Unauthorized: No token provided." });
     }
 
+    const token = authHeader.split(" ")[1];
+
     // ✅ Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id).select("-passwordHash"); // Fetch user from DB
 
-    if (!req.user) {
+    // ✅ Fetch user from DB and exclude password
+    const user = await User.findById(decoded.id).select("-passwordHash");
+
+    if (!user) {
       return res
         .status(401)
         .json({ error: "Unauthorized: User does not exist." });
     }
 
-    res.locals.user = req.user; // ✅ Store user info for frontend use
+    req.user = user; // Attach user to request
+    res.locals.user = user; // ✅ Store user info for frontend use
+
     next();
   } catch (error) {
     console.error("Auth Middleware Error:", error.message);
@@ -38,6 +45,6 @@ export const protect = async (req, res, next) => {
         .json({ error: "Session expired. Please log in again." });
     }
 
-    return res.status(401).json({ error: "Token is invalid or expired." });
+    return res.status(401).json({ error: "Invalid or expired token." });
   }
 };

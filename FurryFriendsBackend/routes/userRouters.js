@@ -1,4 +1,3 @@
-// routes/userRouters.js
 import { Router } from "express";
 import {
   createUser,
@@ -7,22 +6,23 @@ import {
   updateUser,
   deleteUser,
 } from "../controllers/userControllers.js";
+import { protect } from "../middlewares/authMiddleware.js"; // ✅ Protect routes
 
 const router = Router();
 
-// POST /users - Signup endpoint
+// ✅ Signup a new user (PUBLIC)
 router.post("/", createUser);
 
-// GET /users - Fetch all users
-router.get("/", getAllUsers);
+// ✅ Fetch all users (ADMIN ONLY - Implement Role-based access later)
+router.get("/", protect, getAllUsers);
 
-// GET /users/:id - Fetch a single user
-router.get("/:id", getUserById);
+// ✅ Fetch a single user by ID (PRIVATE)
+router.get("/:id", protect, getUserById);
 
-// PUT /users/:id - Update user data
-router.put("/:id", updateUser);
+// ✅ Update authenticated user's profile (PRIVATE)
+router.put("/profile", protect, updateUser); // 🔹 Changed from "/:id" to "/profile"
 
-// DELETE /users/:id - Delete user
-router.delete("/:id", deleteUser);
+// ✅ Delete authenticated user (PRIVATE)
+router.delete("/:id", protect, deleteUser);
 
 export default router;

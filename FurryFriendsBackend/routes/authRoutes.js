@@ -5,7 +5,9 @@ import {
   loginUser,
   resetPassword,
   changePassword,
+  resendOTP,
 } from "../controllers/authController.js";
+import { updateUser } from "../controllers/userControllers.js";
 import { getProfile } from "../controllers/userControllers.js";
 import { protect } from "../middlewares/authMiddleware.js"; // ✅ Import middleware
 
@@ -16,8 +18,10 @@ router.post("/verify-otp", verifyOTP);
 router.post("/login", loginUser);
 router.post("/reset-password", resetPassword);
 router.post("/change-password", changePassword);
+router.post("/resend-otp", resendOTP);
 
 // ✅ Protect the /profile route
-router.get("/profile", protect, getProfile);
+router.put("/profile", protect, updateUser); // ✅ Correct route definition
+router.get("/profile", protect, getProfile); // ✅ Add this line
 
 export default router;
