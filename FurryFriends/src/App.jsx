@@ -17,7 +17,7 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // ✅ Check if user is authenticated
+  // Check if user is authenticated
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token);
@@ -37,13 +37,13 @@ const App = () => {
           <Route path="/signup" element={isAuthenticated ? <Navigate to="/home" /> : <Signup />} />
           <Route path="/otp" element={isAuthenticated ? <Navigate to="/home" /> : <OtpPage />} />
 
-          {/* Private Routes - Only accessible if logged in */}
+          {/* Private Routes - Pass toggleTheme and darkMode to pages using Navbar */}
           <Route element={<PrivateRoute />}>
             <Route path="/home" element={<Home toggleTheme={toggleTheme} darkMode={darkMode} />} />
-            <Route path="/adoption" element={<AdoptionPage />} />
-            <Route path="/popular" element={<Popular />} />
-            <Route path="/adopt_a_pet" element={<AdoptAPetPage />} />
-            <Route path="/myprofile" element={<MyProfile />} />
+            <Route path="/adoption" element={<AdoptionPage toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route path="/popular" element={<Popular toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route path="/adopt_a_pet" element={<AdoptAPetPage toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route path="/myprofile" element={<MyProfile toggleTheme={toggleTheme} darkMode={darkMode} />} />
           </Route>
         </Routes>
       </Router>

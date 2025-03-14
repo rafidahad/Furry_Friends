@@ -21,7 +21,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import SendIcon from "@mui/icons-material/Send";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-const MyProfile = () => {
+const MyProfile = ({ toggleTheme, darkMode }) => {
   // ---------- Local State ----------
   const [mobileOpen, setMobileOpen] = useState(false);
   const [postTitle, setPostTitle] = useState("");
@@ -304,7 +304,11 @@ const MyProfile = () => {
   // ---------- Render ----------
   return (
     <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: "100vh" }}>
-      <Navbar onMenuClick={handleDrawerToggle} showSearch={true} />
+      <Navbar 
+        onMenuClick={handleDrawerToggle} 
+        toggleTheme={toggleTheme} 
+        darkMode={darkMode} 
+      />
       {isMdUp && <LeftSidebarDesktop in={isMdUp} />}
       {!isMdUp && (
         <Drawer anchor="left" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }}>

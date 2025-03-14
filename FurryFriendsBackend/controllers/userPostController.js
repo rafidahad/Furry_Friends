@@ -145,16 +145,22 @@ export const deleteUserPost = async (req, res) => {
 
 export const getRandomPosts = async (req, res) => {
   try {
-    // Use MongoDB aggregation to sample random posts (e.g., 10 posts)
+    // Sample 10 random posts
     const randomPosts = await UserPost.aggregate([{ $sample: { size: 10 } }]);
 
-    // Populate the 'user' field for each post so we have username and profile picture
+    // First, populate the 'user' field in each post
     const postsPopulated = await UserPost.populate(randomPosts, {
       path: "user",
       select: "username profile.profilePicture",
     });
 
-    res.status(200).json(postsPopulated);
+    // Then, populate the 'comments.user' field for each post
+    const postsFullyPopulated = await UserPost.populate(postsPopulated, {
+      path: "comments.user",
+      select: "username profile.profilePicture",
+    });
+
+    res.status(200).json(postsFullyPopulated);
   } catch (error) {
     console.error("Error fetching random posts:", error);
     res.status(500).json({ error: "Internal Server Error" });
