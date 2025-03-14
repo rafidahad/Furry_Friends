@@ -122,7 +122,6 @@ export const deleteUserPost = async (req, res) => {
     if (post.media) {
       const publicId = extractPublicIdFromUrl(post.media);
       if (publicId) {
-        // Use resource_type based on mediaType
         const resourceType = post.mediaType === "video" ? "video" : "image";
         await cloudinary.uploader.destroy(publicId, {
           resource_type: resourceType,
@@ -130,8 +129,8 @@ export const deleteUserPost = async (req, res) => {
       }
     }
 
-    // Remove post from database
-    await post.remove();
+    // Use deleteOne() instead of remove()
+    await post.deleteOne();
 
     // Remove the post reference from the user's posts array
     await User.findByIdAndUpdate(req.user.id, { $pull: { posts: post._id } });
@@ -142,3 +141,4 @@ export const deleteUserPost = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
