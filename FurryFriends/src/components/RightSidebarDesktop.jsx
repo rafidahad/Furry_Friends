@@ -22,21 +22,7 @@ const RightSidebarDesktop = ({ in: inProp }) => {
         color: theme.palette.text.primary,
       }}
     >
-      <Card sx={{ mb: 2 }}>
-        <CardContent>
-          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-            Popular Communities
-          </Typography>
-          <Box sx={{ mt: 1 }}>
-            <Typography variant="body2">/r/Dogs</Typography>
-            <Typography variant="body2">/r/Cats</Typography>
-            <Typography variant="body2">/r/Birds</Typography>
-          </Box>
-          <Button variant="outlined" size="small" sx={{ mt: 2 }}>
-            View All
-          </Button>
-        </CardContent>
-      </Card>
+      
       <Card>
         <CardContent>
           <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
