@@ -54,6 +54,22 @@ const MyProfile = () => {
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
 
+  // ---------- Helper: Compute Relative Time ----------
+  const timeAgo = (date) => {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) return interval + " year" + (interval > 1 ? "s" : "") + " ago";
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return interval + " month" + (interval > 1 ? "s" : "") + " ago";
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return interval + " day" + (interval > 1 ? "s" : "") + " ago";
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
+    return Math.floor(seconds) + " seconds ago";
+  };
+
   // ---------- Fetch User Profile ----------
   useEffect(() => {
     const fetchProfile = async () => {
@@ -204,7 +220,6 @@ const MyProfile = () => {
     }
   };
   
-
   // ---------- Like / Comment Logic ----------
   const handleLike = async (postId) => {
     try {
@@ -290,14 +305,12 @@ const MyProfile = () => {
   return (
     <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: "100vh" }}>
       <Navbar onMenuClick={handleDrawerToggle} showSearch={true} />
-
       {isMdUp && <LeftSidebarDesktop in={isMdUp} />}
       {!isMdUp && (
         <Drawer anchor="left" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }}>
           <LeftSidebar />
         </Drawer>
       )}
-
       <Box sx={{ display: "flex", justifyContent: "center", pt: "64px" }}>
         <Box component="main" sx={{ flex: 1, marginLeft: { xs: 0, md: "240px" }, p: 2, maxWidth: "800px" }}>
           {loading ? (
@@ -407,7 +420,8 @@ const MyProfile = () => {
                         />
                       }
                       title={post.title || "Untitled Post"}
-                      subheader={`Posted by ${post.user?.username || "Unknown"}`}
+                      // Display posted by info along with relative time
+                      subheader={`Posted by ${post.user?.username || "Unknown"} • ${timeAgo(post.createdAt)}`}
                       action={
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                           <Typography variant="body2" sx={{ mr: 1 }}>

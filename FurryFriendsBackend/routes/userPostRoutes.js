@@ -7,7 +7,11 @@ import {
 } from "../controllers/userPostController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 import { uploadImage, uploadVideo } from "../middlewares/upload.js";
-import { deleteUserPost } from "../controllers/userPostController.js";
+import {
+  deleteUserPost,
+  getRandomPosts,
+} from "../controllers/userPostController.js";
+
 
 const router = Router();
 
@@ -25,5 +29,5 @@ router.put("/like/:postId", protect, likeUserPost);
 // ✅ Add a comment to a post
 router.put("/comment/:postId", protect, addUserPostComment);
 router.delete("/:postId", protect, deleteUserPost);
-
+router.get("/random", protect, getRandomPosts);
 export default router;
