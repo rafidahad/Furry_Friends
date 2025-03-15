@@ -73,7 +73,7 @@ const App = () => {
             <Route path="/fish" element={<Fish toggleTheme={toggleTheme} darkMode={darkMode} />} />
 
             <Route path="/pet-accessories" element={<PetAccessories />} />
-            <Route path="/vet-locator" element={<VetLocator />} />
+            <Route path="/vet-locator" element={<VetLocator toggleTheme={toggleTheme} darkMode={darkMode} />} />
           </Route>
         </Routes>
       </Router>

@@ -14,13 +14,16 @@ const mapContainerStyle = {
   height: "500px",
 };
 
-const VetLocator = () => {
+const VetLocator = ({ toggleTheme, darkMode }) => {
   const [location, setLocation] = useState(null);
   const [vets, setVets] = useState([]);
   const [selectedVet, setSelectedVet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const handleDrawerToggle = () => {
+    setMobileOpen((prev) => !prev);
+  };
 
   const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -80,9 +83,16 @@ const VetLocator = () => {
   };
 
   return (
-    <Box sx={{ backgroundColor: "#f9f9f9", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <Box sx={{backgroundColor: darkMode ? "#121212" : "#f9f9f9", 
+        minHeight: "100vh", 
+        display: "flex", 
+        flexDirection: "column"}}>
       {/* Navbar */}
-      <Navbar onMenuClick={() => setMobileOpen(!mobileOpen)} showSearch={true} />
+      <Navbar 
+        onMenuClick={handleDrawerToggle} 
+        toggleTheme={toggleTheme} 
+        darkMode={darkMode} 
+      />
 
       {/* Layout with Sidebar & Main Content */}
       <Box sx={{ display: "flex", flex: 1 }}>
@@ -121,7 +131,9 @@ const VetLocator = () => {
 
           {/* Google Map */}
           {location && !loading && (
-            <Card sx={{ mb: 2 }}>
+            <Card sx={{ mb: 2, 
+                backgroundColor: darkMode ? "#1E1E1E" : "#ffffff",
+                color: darkMode ? "#ffffff" : "#000000"}}>
               <CardContent>
                 <LoadScript googleMapsApiKey={API_KEY}>
                   <GoogleMap mapContainerStyle={mapContainerStyle} center={location} zoom={14}>
@@ -182,7 +194,9 @@ const VetLocator = () => {
                   Veterinary Clinics Found:
                 </Typography>
                 {vets.map((vet, index) => (
-                  <Paper key={index} sx={{ p: 2, mb: 2, backgroundColor: "#e3f2fd" }}>
+                  <Paper key={index} sx={{ p: 2,mb:2, 
+                    backgroundColor: darkMode ? "#2C2C2C" : "#e3f2fd", 
+                    color: darkMode ? "#ffffff" : "#000000" }}>
                     <Typography variant="h6">{vet.displayName.text}</Typography>
                     <Typography variant="body2">⭐ Rating: {vet.rating || "N/A"}</Typography>
                     <Typography variant="body2">📍 {vet.formattedAddress}</Typography>
