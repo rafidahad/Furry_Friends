@@ -143,7 +143,7 @@ const LeftSidebarDesktop = ({ in: inProp }) => {
           </ListItemIcon>
           <ListItemText primary="Pet Shops" />
         </ListItemButton>
-        <ListItemButton>
+        <ListItemButton component={Link} to="/pet-accessories">
           <ListItemIcon>
             <ShoppingCartIcon fontSize="small" />
           </ListItemIcon>

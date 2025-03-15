@@ -12,7 +12,7 @@ import AdoptAPetPage from "./pages/AdoptAPetPage";
 import MyProfile from "./pages/MyProfile";
 import OtpPage from "./pages/OtpPage";
 import PrivateRoute from "./components/PrivateRoute";
-
+import PetAccessories from "./pages/PetAccessories";
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -44,6 +44,7 @@ const App = () => {
             <Route path="/popular" element={<Popular toggleTheme={toggleTheme} darkMode={darkMode} />} />
             <Route path="/adopt_a_pet" element={<AdoptAPetPage toggleTheme={toggleTheme} darkMode={darkMode} />} />
             <Route path="/myprofile" element={<MyProfile toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route path="/pet-accessories" element={<PetAccessories />} />
           </Route>
         </Routes>
       </Router>
