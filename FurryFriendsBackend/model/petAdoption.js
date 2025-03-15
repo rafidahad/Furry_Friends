@@ -1,6 +1,5 @@
 // model/petAdoption.js
-const mongoose = require("mongoose");
-
+import mongoose from "mongoose";
 const petAdoptionSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -21,4 +20,4 @@ const petAdoptionSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("PetAdoption", petAdoptionSchema);
+export default model("PetAdoption", petAdoptionSchema);
