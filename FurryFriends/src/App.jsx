@@ -25,6 +25,12 @@ import GuineaPigs from "./pages/PetTopics/GuineaPigs";
 import Hamsters from "./pages/PetTopics/Hamsters";
 import Rabbits from "./pages/PetTopics/Rabbits";
 import Reptiles from "./pages/PetTopics/Reptiles";
+import About from "./pages/AboutPolicy/About";
+import Help from "./pages/AboutPolicy/Help";
+import PrivacyPolicy from "./pages/AboutPolicy/PrivacyPolicy";
+import UserAgreement from "./pages/AboutPolicy/UserAgreement";
+import Rules from "./pages/AboutPolicy/Rules";
+import SeekHelp from "./pages/AboutPolicy/SeekHelp";
 
 import PetAccessories from "./pages/PetAccessories";
 import VetLocator from './pages/VetLocator';
@@ -71,6 +77,12 @@ const App = () => {
             <Route path="/reptiles" element={<Reptiles toggleTheme={toggleTheme} darkMode={darkMode} />} />
             <Route path="/ferrets" element={<Ferrets toggleTheme={toggleTheme} darkMode={darkMode} />} />
             <Route path="/fish" element={<Fish toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route path="/about" element={<About toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route path="/help" element={<Help toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route path="/user-agreement" element={<UserAgreement toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route path="/rules" element={<Rules toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route path="/seek-help" element={<SeekHelp toggleTheme={toggleTheme} darkMode={darkMode} />} />
 
             <Route path="/pet-accessories" element={<PetAccessories />} />
             <Route path="/vet-locator" element={<VetLocator toggleTheme={toggleTheme} darkMode={darkMode} />} />
