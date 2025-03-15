@@ -1,31 +1,20 @@
-// testEmail.js
-import dotenv from 'dotenv';
-dotenv.config(); // Ensure your .env file is loaded
-
-import nodemailer from 'nodemailer';
-
-// Create a transporter using your email credentials
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // Change this if you're using a different email service
-  auth: {
-    user: process.env.EMAIL_USER,       // Your email address, e.g., yourapp@gmail.com
-    pass: process.env.EMAIL_PASS,       // Your email password or App Password
-  },
-});
+// utils/testEmail.js
+import dotenv from "dotenv";
+// Adjust the path if .env is in the parent directory
+dotenv.config({ path: "../.env" });
+import transporter from "./email.js";
 
 async function sendTestEmail() {
   try {
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_USER,       // Sender address
-      to: 'rafidahad123@gmail.com',        // Replace with a valid recipient email address
-      subject: 'Test Email from Nodemailer',
-      text: 'Hello, this is a test email sent from Nodemailer!',
-      // Optionally add an HTML body:
-      // html: '<p>Hello, this is a test email sent from <strong>Nodemailer</strong>!</p>',
+      from: process.env.EMAIL_USER,
+      to: "recipient@example.com", // Replace with a valid email address
+      subject: "Test Email from Nodemailer",
+      text: "Hello, this is a test email.",
     });
-    console.log('Email sent successfully:', info.response);
-  } catch (error) {
-    console.error('Error sending email:', error);
+    console.log("Email sent:", info.response);
+  } catch (err) {
+    console.error("Error sending email:", err);
   }
 }
 
