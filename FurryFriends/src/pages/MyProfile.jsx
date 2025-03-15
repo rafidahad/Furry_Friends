@@ -1,8 +1,25 @@
+// src/pages/MyProfile.jsx
 import React, { useEffect, useState } from "react";
-import { 
-  Box, Drawer, Avatar, Button, Typography, Card, CardContent, 
-  TextField, Dialog, DialogActions, DialogContent, DialogTitle,
-  Snackbar, Alert, CardHeader, IconButton, Select, MenuItem, Menu
+import {
+  Box,
+  Drawer,
+  Avatar,
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Snackbar,
+  Alert,
+  CardHeader,
+  IconButton,
+  Select,
+  MenuItem,
+  Menu
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -21,13 +38,12 @@ import ShareIcon from "@mui/icons-material/Share";
 import SendIcon from "@mui/icons-material/Send";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
+// Import the CreatePostDialog component
+import CreatePostDialog from "../components/CreatePostDialog";
+
 const MyProfile = ({ toggleTheme, darkMode }) => {
   // ---------- Local State ----------
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [postTitle, setPostTitle] = useState("");
-  const [postContent, setPostContent] = useState("");
-  const [petTag, setPetTag] = useState("General");
-  const [mediaFile, setMediaFile] = useState(null);
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);  
   const [loading, setLoading] = useState(true);
@@ -46,9 +62,12 @@ const MyProfile = ({ toggleTheme, darkMode }) => {
   const [commentBoxOpen, setCommentBoxOpen] = useState({});
   const [newCommentText, setNewCommentText] = useState({});
 
-  // For post menu (delete option)
+  // For post menu (delete option) – declare only once
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedPostId, setSelectedPostId] = useState(null);
+
+  // State for Create Post Dialog
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
   const navigate = useNavigate();
   const theme = useTheme();
@@ -123,7 +142,7 @@ const MyProfile = ({ toggleTheme, darkMode }) => {
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
     setNewProfilePicture(file);
-    setPreviewProfilePicture(URL.createObjectURL(file)); 
+    setPreviewProfilePicture(URL.createObjectURL(file));
   };
 
   const handleSaveProfile = async () => {
@@ -154,72 +173,13 @@ const MyProfile = ({ toggleTheme, darkMode }) => {
     }
   };
 
-  // ---------- Post Creation Logic ----------
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setMediaFile(file);
+  // ---------- onPostCreated Callback for CreatePostDialog ----------
+  const handlePostCreated = (newPost) => {
+    // Insert new post at the top of the posts list
+    setPosts((prev) => [newPost, ...prev]);
+    setSnackbar({ open: true, message: "Post created successfully!", severity: "success" });
   };
 
-  const handleCreatePost = async () => {
-    try {
-      // Prevent creation if no title, content, or media is provided
-      if (!postTitle.trim() && !postContent.trim() && !mediaFile) return;
-  
-      let mediaUrl = "";
-      let mediaType = "text";
-  
-      // If a file is attached, upload it to Cloudinary first
-      if (mediaFile) {
-        // Determine if the file is a video or an image
-        const isVideo = mediaFile.type.startsWith("video");
-        const uploadEndpoint = isVideo ? "/upload/video" : "/upload/image";
-  
-        const formData = new FormData();
-        formData.append("file", mediaFile);
-  
-        // Upload file using FormData (similar to handleSaveProfile)
-        const uploadRes = await api.post(uploadEndpoint, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-  
-        mediaUrl = uploadRes.data.url;
-        mediaType = isVideo ? "video" : "image";
-      }
-  
-      // Prepare the post data including the Cloudinary URL
-      const newPostData = {
-        title: postTitle,         // Title field
-        content: postContent,       // Main content of the post
-        media: mediaUrl,            // URL from Cloudinary
-        mediaType,                // "video", "image", or "text"
-        petTag,                   // The selected pet tag
-      };
-  
-      // Send post data as JSON to the backend
-      const response = await api.post("/posts/create", newPostData);
-      setPosts((prev) => [response.data, ...prev]);
-  
-      // Clear input fields and reset to defaults
-      setPostTitle("");
-      setPostContent("");
-      setMediaFile(null);
-      setPetTag("General");
-  
-      setSnackbar({
-        open: true,
-        message: "Post created successfully!",
-        severity: "success",
-      });
-    } catch (err) {
-      console.error("Error creating post:", err);
-      setSnackbar({
-        open: true,
-        message: "Failed to create post.",
-        severity: "error",
-      });
-    }
-  };
-  
   // ---------- Like / Comment Logic ----------
   const handleLike = async (postId) => {
     try {
@@ -228,12 +188,9 @@ const MyProfile = ({ toggleTheme, darkMode }) => {
         prevPosts.map((p) => {
           if (p._id === postId) {
             const alreadyLiked = p.likes.includes(user._id);
-            let updatedLikes = [];
-            if (alreadyLiked) {
-              updatedLikes = p.likes.filter((id) => id !== user._id);
-            } else {
-              updatedLikes = [...p.likes, user._id];
-            }
+            let updatedLikes = alreadyLiked
+              ? p.likes.filter((id) => id !== user._id)
+              : [...p.likes, user._id];
             return { ...p, likes: updatedLikes };
           }
           return p;
@@ -304,11 +261,7 @@ const MyProfile = ({ toggleTheme, darkMode }) => {
   // ---------- Render ----------
   return (
     <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: "100vh" }}>
-      <Navbar 
-        onMenuClick={handleDrawerToggle} 
-        toggleTheme={toggleTheme} 
-        darkMode={darkMode} 
-      />
+      <Navbar onMenuClick={handleDrawerToggle} toggleTheme={toggleTheme} darkMode={darkMode} />
       {isMdUp && <LeftSidebarDesktop in={isMdUp} />}
       {!isMdUp && (
         <Drawer anchor="left" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }}>
@@ -356,57 +309,14 @@ const MyProfile = ({ toggleTheme, darkMode }) => {
                 </CardContent>
               </Card>
 
-              {/* Create Post Section */}
+              {/* Create Post Button (Dialog) */}
               <Card sx={{ mb: 2 }}>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
                     Create a Post
                   </Typography>
-                  {/* Title Input */}
-                  <TextField
-                    fullWidth
-                    placeholder="Post Title"
-                    value={postTitle}
-                    onChange={(e) => setPostTitle(e.target.value)}
-                    sx={{ mb: 2 }}
-                  />
-                  {/* Pet Tag Dropdown */}
-                  <Select
-                    fullWidth
-                    value={petTag}
-                    onChange={(e) => setPetTag(e.target.value)}
-                    sx={{ mb: 2 }}
-                  >
-                    <MenuItem value="Dogs">Dogs</MenuItem>
-                    <MenuItem value="Cats">Cats</MenuItem>
-                    <MenuItem value="Fish">Fish</MenuItem>
-                    <MenuItem value="Birds">Birds</MenuItem>
-                    <MenuItem value="Rabbits">Rabbits</MenuItem>
-                    <MenuItem value="Hamsters">Hamsters</MenuItem>
-                    <MenuItem value="Guinea Pigs">Guinea Pigs</MenuItem>
-                    <MenuItem value="Reptiles">Reptiles</MenuItem>
-                    <MenuItem value="Ferrets">Ferrets</MenuItem>
-                    <MenuItem value="Others">Others</MenuItem>
-                    <MenuItem value="General">General</MenuItem>
-                  </Select>
-                  {/* Post Content Input */}
-                  <TextField
-                    multiline
-                    rows={3}
-                    fullWidth
-                    placeholder="Write a post..."
-                    value={postContent}
-                    onChange={(e) => setPostContent(e.target.value)}
-                    sx={{ mb: 2 }}
-                  />
-                  <input type="file" accept="image/*,video/*" onChange={handleFileChange} />
-                  <Button
-                    variant="contained"
-                    onClick={handleCreatePost}
-                    disabled={!postTitle.trim() && !postContent.trim() && !mediaFile}
-                    sx={{ mt: 2 }}
-                  >
-                    Post
+                  <Button variant="contained" onClick={() => setOpenCreateDialog(true)}>
+                    Create Post
                   </Button>
                 </CardContent>
               </Card>
@@ -424,7 +334,6 @@ const MyProfile = ({ toggleTheme, darkMode }) => {
                         />
                       }
                       title={post.title || "Untitled Post"}
-                      // Display posted by info along with relative time
                       subheader={`Posted by ${post.user?.username || "Unknown"} • ${timeAgo(post.createdAt)}`}
                       action={
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -549,6 +458,13 @@ const MyProfile = ({ toggleTheme, darkMode }) => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* CreatePostDialog for new posts */}
+      <CreatePostDialog
+        open={openCreateDialog}
+        onClose={() => setOpenCreateDialog(false)}
+        onPostCreated={handlePostCreated}
+      />
     </Box>
   );
 };
