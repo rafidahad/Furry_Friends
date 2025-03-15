@@ -166,3 +166,18 @@ export const getRandomPosts = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+// In src/controllers/userPostController.js
+
+export const getPostsByTag = async (req, res) => {
+  try {
+    const tag = req.params.tag; // Get the tag from the URL
+    const posts = await UserPost.find({ petTag: tag })
+      .populate("user", "username profile.profilePicture")
+      .populate("comments.user", "username profile.profilePicture")
+      .sort({ createdAt: -1 });
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error fetching posts by tag:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

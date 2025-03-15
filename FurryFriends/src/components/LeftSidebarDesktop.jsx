@@ -1,4 +1,4 @@
-// src/components/LeftSidebarDesktop.jsx (Desktop Version)
+// src/components/LeftSidebarDesktop.jsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -13,7 +13,7 @@ import {
 import { Link } from 'react-router-dom'; // Import Link for routing
 import { useTheme } from '@mui/material/styles';
 import Slide from '@mui/material/Slide';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { ExpandLess, ExpandMore, AddCircleOutline } from '@mui/icons-material';
 
 // Import icons (same as before)
 import HomeIcon from '@mui/icons-material/Home';
@@ -32,9 +32,12 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import GavelIcon from '@mui/icons-material/Gavel';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 
+import CreatePostDialog from '../components/CreatePostDialog';
+
 const LeftSidebarDesktop = ({ in: inProp }) => {
   const theme = useTheme();
   const [openPetTopics, setOpenPetTopics] = useState(true);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
   const handlePetTopicsClick = () => {
     setOpenPetTopics((prev) => !prev);
@@ -49,23 +52,14 @@ const LeftSidebarDesktop = ({ in: inProp }) => {
         borderRight: `1px solid ${theme.palette.divider}`,
         overflowY: 'auto',
         color: theme.palette.text.primary,
-        // Hide scrollbar by default
-        '&::-webkit-scrollbar': {
-          width: '0px',
-        },
-        // On hover, show scrollbar (for WebKit browsers)
-        '&:hover::-webkit-scrollbar': {
-          width: '8px',
-        },
+        '&::-webkit-scrollbar': { width: '0px' },
+        '&:hover::-webkit-scrollbar': { width: '8px' },
         '&:hover::-webkit-scrollbar-thumb': {
           backgroundColor: theme.palette.divider,
           borderRadius: '4px',
         },
-        // For Firefox (scrollbar-width)
         scrollbarWidth: 'none',
-        '&:hover': {
-          scrollbarWidth: 'auto',
-        },
+        '&:hover': { scrollbarWidth: 'auto' },
       }}
     >
       <List>
@@ -83,6 +77,13 @@ const LeftSidebarDesktop = ({ in: inProp }) => {
           </ListItemIcon>
           <ListItemText primary="Popular" />
         </ListItemButton>
+        {/* Create Post Item */}
+        <ListItemButton onClick={() => setOpenCreateDialog(true)}>
+          <ListItemIcon>
+            <AddCircleOutline fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Create Post" />
+        </ListItemButton>
         <Divider />
 
         {/* Segment 2: Pet Topics */}
@@ -95,24 +96,60 @@ const LeftSidebarDesktop = ({ in: inProp }) => {
         </ListItemButton>
         <Collapse in={openPetTopics} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            {[
-              'Dogs',
-              'Cats',
-              'Fish',
-              'Birds',
-              'Rabbits',
-              'Hamsters',
-              'Guinea Pigs',
-              'Reptiles',
-              'Ferrets',
-            ].map((topic) => (
-              <ListItemButton key={topic} sx={{ pl: 4 }}>
-                <ListItemIcon>
-                  <PetsIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary={topic} />
-              </ListItemButton>
-            ))}
+            <ListItemButton component={Link} to="/dogs" sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <PetsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Dogs" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/cats" sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <PetsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Cats" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/fish" sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <PetsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Fish" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/birds" sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <PetsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Birds" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/rabbits" sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <PetsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Rabbits" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/hamsters" sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <PetsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Hamsters" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/guinea-pigs" sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <PetsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Guinea Pigs" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/reptiles" sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <PetsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Reptiles" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/ferrets" sx={{ pl: 4 }}>
+              <ListItemIcon>
+                <PetsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Ferrets" />
+            </ListItemButton>
           </List>
         </Collapse>
         <Divider />
@@ -199,6 +236,10 @@ const LeftSidebarDesktop = ({ in: inProp }) => {
           <ListItemText primary="Seek Help" />
         </ListItemButton>
       </List>
+      <CreatePostDialog
+        open={openCreateDialog}
+        onClose={() => setOpenCreateDialog(false)}
+      />
     </Box>
   );
 
