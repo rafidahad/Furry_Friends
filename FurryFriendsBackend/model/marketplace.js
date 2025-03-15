@@ -1,5 +1,5 @@
 // model/marketplace.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const marketplaceSchema = new mongoose.Schema({
   productName: { type: String, required: true },
@@ -10,4 +10,4 @@ const marketplaceSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Marketplace", marketplaceSchema);
+export default model("Marketplace", marketplaceSchema);

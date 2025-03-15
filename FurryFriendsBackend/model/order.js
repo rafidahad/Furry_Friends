@@ -1,5 +1,5 @@
 // model/order.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
   userId: {
@@ -22,4 +22,4 @@ const orderSchema = new mongoose.Schema({
   totalPrice: { type: Number, required: true },
 });
 
-module.exports = mongoose.model("Order", orderSchema);
+export default model("Order", orderSchema);
