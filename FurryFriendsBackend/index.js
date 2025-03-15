@@ -6,6 +6,7 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import userPostRoutes from "./routes/userPostRoutes.js";
+import vetRoutes from './routes/vetRoutes.js'; // <-- new
 // You can also mount other routes (e.g., userRoutes) as needed
 
 dotenv.config();
@@ -22,7 +23,7 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/upload", uploadRoutes);
 app.use("/posts", userPostRoutes); 
-
+app.use('/vets', vetRoutes); // <-- new
 mongoose
   .connect(process.env.DB_URL)
   .then(() => console.log("MongoDB connected."))

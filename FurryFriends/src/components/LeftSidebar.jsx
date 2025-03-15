@@ -13,11 +13,10 @@ import {
 import { ExpandLess, ExpandMore, AddCircleOutline } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-
+import CreatePostDialog from '../components/CreatePostDialog';
 import HomeIcon from '@mui/icons-material/Home';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import PetsIcon from '@mui/icons-material/Pets';
-import CreatePostDialog from '../components/CreatePostDialog';
 
 const LeftSidebar = () => {
   const theme = useTheme();
@@ -74,22 +73,28 @@ const LeftSidebar = () => {
         <Collapse in={openPetTopics} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <ListItemButton component={Link} to="/dogs" sx={{ pl: 4 }}>
-              <ListItemIcon>
-                <PetsIcon fontSize="small" />
-              </ListItemIcon>
               <ListItemText primary="Dogs" />
             </ListItemButton>
             <ListItemButton component={Link} to="/cats" sx={{ pl: 4 }}>
-              <ListItemIcon>
-                <PetsIcon fontSize="small" />
-              </ListItemIcon>
               <ListItemText primary="Cats" />
             </ListItemButton>
             <ListItemButton component={Link} to="/birds" sx={{ pl: 4 }}>
-              <ListItemIcon>
-                <PetsIcon fontSize="small" />
-              </ListItemIcon>
               <ListItemText primary="Birds" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/rabbits" sx={{ pl: 4 }}>
+              <ListItemText primary="Rabbits" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/hamsters" sx={{ pl: 4 }}>
+              <ListItemText primary="Hamsters" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/guinea-pigs" sx={{ pl: 4 }}>
+              <ListItemText primary="Guinea Pigs" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/reptiles" sx={{ pl: 4 }}>
+              <ListItemText primary="Reptiles" />
+            </ListItemButton>
+            <ListItemButton component={Link} to="/ferrets" sx={{ pl: 4 }}>
+              <ListItemText primary="Ferrets" />
             </ListItemButton>
           </List>
         </Collapse>

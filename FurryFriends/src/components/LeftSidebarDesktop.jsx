@@ -15,7 +15,7 @@ import { useTheme } from '@mui/material/styles';
 import Slide from '@mui/material/Slide';
 import { ExpandLess, ExpandMore, AddCircleOutline } from '@mui/icons-material';
 
-// Import icons (same as before)
+// Import icons
 import HomeIcon from '@mui/icons-material/Home';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import PetsIcon from '@mui/icons-material/Pets';
@@ -108,12 +108,6 @@ const LeftSidebarDesktop = ({ in: inProp }) => {
               </ListItemIcon>
               <ListItemText primary="Cats" />
             </ListItemButton>
-            <ListItemButton component={Link} to="/fish" sx={{ pl: 4 }}>
-              <ListItemIcon>
-                <PetsIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Fish" />
-            </ListItemButton>
             <ListItemButton component={Link} to="/birds" sx={{ pl: 4 }}>
               <ListItemIcon>
                 <PetsIcon fontSize="small" />
@@ -162,19 +156,21 @@ const LeftSidebarDesktop = ({ in: inProp }) => {
           </ListItemIcon>
           <ListItemText primary="Adoption" />
         </ListItemButton>
-        <ListItemButton>
+        <ListItemButton component={Link} to="/lost-and-found">
           <ListItemIcon>
             <SearchOffIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Lost and Found" />
         </ListItemButton>
-        <ListItemButton>
-          <ListItemIcon>
-            <LocalHospitalIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText primary="Nearest Vet" />
-        </ListItemButton>
-        <ListItemButton>
+        
+<ListItemButton component={Link} to="/vet-locator">
+  <ListItemIcon>
+    <LocalHospitalIcon fontSize="small" />
+  </ListItemIcon>
+  <ListItemText primary="Nearest Vet" />
+</ListItemButton>
+
+        <ListItemButton component={Link} to="/pet-shops">
           <ListItemIcon>
             <StoreIcon fontSize="small" />
           </ListItemIcon>
@@ -186,7 +182,7 @@ const LeftSidebarDesktop = ({ in: inProp }) => {
           </ListItemIcon>
           <ListItemText primary="Pet Accessories" />
         </ListItemButton>
-        <ListItemButton>
+        <ListItemButton component={Link} to="/communities">
           <ListItemIcon>
             <PeopleIcon fontSize="small" />
           </ListItemIcon>
@@ -196,31 +192,31 @@ const LeftSidebarDesktop = ({ in: inProp }) => {
 
         {/* Segment 4: About & Policy */}
         <ListSubheader>About & Policy</ListSubheader>
-        <ListItemButton>
+        <ListItemButton component={Link} to="/about">
           <ListItemIcon>
             <InfoIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="About Furry Friends" />
         </ListItemButton>
-        <ListItemButton>
+        <ListItemButton component={Link} to="/help">
           <ListItemIcon>
             <HelpOutlineIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Help" />
         </ListItemButton>
-        <ListItemButton>
+        <ListItemButton component={Link} to="/privacy-policy">
           <ListItemIcon>
             <LockIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Privacy Policy" />
         </ListItemButton>
-        <ListItemButton>
+        <ListItemButton component={Link} to="/user-agreement">
           <ListItemIcon>
             <DescriptionIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="User Agreement" />
         </ListItemButton>
-        <ListItemButton>
+        <ListItemButton component={Link} to="/rules">
           <ListItemIcon>
             <GavelIcon fontSize="small" />
           </ListItemIcon>
@@ -229,7 +225,7 @@ const LeftSidebarDesktop = ({ in: inProp }) => {
         <Divider />
 
         {/* Segment 5: Additional */}
-        <ListItemButton>
+        <ListItemButton component={Link} to="/seek-help">
           <ListItemIcon>
             <SupportAgentIcon fontSize="small" />
           </ListItemIcon>

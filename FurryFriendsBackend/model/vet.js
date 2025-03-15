@@ -1,23 +1,15 @@
-// model/vet.js
-const mongoose = require("mongoose");
+// models/vet.js
+import mongoose from "mongoose";
 
 const vetSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  address: { type: String, required: true },
-  phone: { type: String, default: "" },
+  address: String,
   location: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      default: "Point",
-    },
-    coordinates: {
-      type: [Number], // [longitude, latitude]
-      index: "2dsphere",
-    },
+    type: { type: String, enum: ["Point"], required: true },
+    coordinates: { type: [Number], required: true, index: "2dsphere" }, // ✅ Ensuring correct index
   },
-  services: [String],
-  createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Vet", vetSchema);
+vetSchema.index({ location: "2dsphere" }); // ✅ Ensure the geospatial index is properly set
+
+export default mongoose.model("Vet", vetSchema);
