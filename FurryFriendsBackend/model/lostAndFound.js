@@ -1,5 +1,5 @@
 // model/lostAndFound.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const lostAndFoundSchema = new mongoose.Schema({
   userId: {
@@ -20,4 +20,4 @@ const lostAndFoundSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("LostAndFound", lostAndFoundSchema);
+export default model("LostAndFound", lostAndFoundSchema);

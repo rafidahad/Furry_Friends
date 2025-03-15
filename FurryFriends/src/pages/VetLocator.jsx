@@ -21,10 +21,8 @@ const VetLocator = ({ toggleTheme, darkMode }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const handleDrawerToggle = () => {
-    setMobileOpen((prev) => !prev);
-  };
-
+  
+  const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
   const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   useEffect(() => {
@@ -74,8 +72,15 @@ const VetLocator = ({ toggleTheme, darkMode }) => {
         }
       );
 
-      setVets(response.data.places || []);
+      console.log("Fetched Vet Clinics:", response.data.places);
+      
+      // Ensure valid latitude/longitude before rendering markers
+      const validVets = response.data.places.filter(vet => vet.location?.latitude && vet.location?.longitude);
+      console.log("Valid Vet Locations:", validVets);
+      
+      setVets(validVets);
     } catch (error) {
+      console.error("Vet Clinics Fetch Error:", error);
       setError("Error fetching vet clinics. Please try again.");
     } finally {
       setLoading(false);
@@ -83,34 +88,17 @@ const VetLocator = ({ toggleTheme, darkMode }) => {
   };
 
   return (
-    <Box sx={{backgroundColor: darkMode ? "#121212" : "#f9f9f9", 
-        minHeight: "100vh", 
-        display: "flex", 
-        flexDirection: "column"}}>
+    <Box sx={{ backgroundColor: darkMode ? "#121212" : "#f9f9f9", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       {/* Navbar */}
-      <Navbar 
-        onMenuClick={handleDrawerToggle} 
-        toggleTheme={toggleTheme} 
-        darkMode={darkMode} 
-      />
+      <Navbar onMenuClick={handleDrawerToggle} toggleTheme={toggleTheme} darkMode={darkMode} />
 
       {/* Layout with Sidebar & Main Content */}
       <Box sx={{ display: "flex", flex: 1 }}>
-        {/* Sidebar */}
         <LeftSidebarDesktop in={true} />
         <LeftSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
         {/* Main Content */}
-        <Box 
-          component="main" 
-          sx={{ 
-            flexGrow: 1, 
-            p: 3, 
-            ml: { xs: 0, md: "240px" }, 
-            maxWidth: "1200px",
-            width: "100%",
-          }}
-        >
+        <Box component="main" sx={{ flexGrow: 1, p: 3, ml: { xs: 0, md: "240px" }, maxWidth: "1200px", width: "100%" }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
             Nearest Vet Clinics
           </Typography>
@@ -131,28 +119,33 @@ const VetLocator = ({ toggleTheme, darkMode }) => {
 
           {/* Google Map */}
           {location && !loading && (
-            <Card sx={{ mb: 2, 
-                backgroundColor: darkMode ? "#1E1E1E" : "#ffffff",
-                color: darkMode ? "#ffffff" : "#000000"}}>
+            <Card sx={{ mb: 2, backgroundColor: darkMode ? "#1E1E1E" : "#ffffff", color: darkMode ? "#ffffff" : "#000000" }}>
               <CardContent>
-                <LoadScript googleMapsApiKey={API_KEY}>
-                  <GoogleMap mapContainerStyle={mapContainerStyle} center={location} zoom={14}>
+                <LoadScript googleMapsApiKey={API_KEY} libraries={["places"]}>
+                  <GoogleMap 
+                    mapContainerStyle={mapContainerStyle} 
+                    center={location} 
+                    zoom={14}
+                  >
                     {/* 🔵 User's Location */}
                     <Marker position={location} label="You" />
 
                     {/* 🏥 Display Vet Clinics */}
-                    {vets.map((vet, index) => (
-                      <Marker
-                        key={index}
-                        position={{
-                          lat: vet.location.latitude,
-                          lng: vet.location.longitude,
-                        }}
-                        onClick={() => setSelectedVet(vet)}
-                      />
-                    ))}
+                    {vets.map((vet, index) => {
+                      console.log(`Adding marker: ${vet.displayName.text} at (${vet.location.latitude}, ${vet.location.longitude})`);
+                      return (
+                        <Marker
+                          key={index}
+                          position={{
+                            lat: vet.location.latitude,
+                            lng: vet.location.longitude,
+                          }}
+                          onClick={() => setSelectedVet(vet)}
+                        />
+                      );
+                    })}
 
-                    {/* 🏥 Show Vet Info */}
+                    {/* 🏥 Show Vet Info when marker is clicked */}
                     {selectedVet && (
                       <InfoWindow
                         position={{
@@ -163,9 +156,7 @@ const VetLocator = ({ toggleTheme, darkMode }) => {
                       >
                         <Box sx={{ p: 1 }}>
                           <Typography variant="h6">{selectedVet.displayName.text}</Typography>
-                          <Typography variant="body2">
-                            ⭐ Rating: {selectedVet.rating || "N/A"}
-                          </Typography>
+                          <Typography variant="body2">⭐ Rating: {selectedVet.rating || "N/A"}</Typography>
                           <Typography variant="body2">📍 {selectedVet.formattedAddress}</Typography>
                           <Button
                             variant="contained"
