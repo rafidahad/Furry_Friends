@@ -32,7 +32,7 @@ import PrivacyPolicy from "./pages/AboutPolicy/PrivacyPolicy";
 import UserAgreement from "./pages/AboutPolicy/UserAgreement";
 import Rules from "./pages/AboutPolicy/Rules";
 import SeekHelp from "./pages/AboutPolicy/SeekHelp";
-
+import PetShopLocator from "./pages/PetShopLocator";
 import PetAccessories from "./pages/PetAccessories";
 import VetLocator from "./pages/VetLocator";
 
@@ -84,6 +84,10 @@ const App = () => {
             <Route path="/user-agreement" element={<UserAgreement toggleTheme={toggleTheme} darkMode={darkMode} />} />
             <Route path="/rules" element={<Rules toggleTheme={toggleTheme} darkMode={darkMode} />} />
             <Route path="/seek-help" element={<SeekHelp toggleTheme={toggleTheme} darkMode={darkMode} />} />
+            <Route
+             path="/pet-shop-locator"
+             element={<PetShopLocator toggleTheme={toggleTheme} darkMode={darkMode} />}
+          />
 
             <Route path="/pet-accessories" element={<PetAccessories />} />
             <Route path="/vet-locator" element={<VetLocator toggleTheme={toggleTheme} darkMode={darkMode} />} />

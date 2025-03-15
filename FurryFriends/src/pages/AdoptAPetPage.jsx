@@ -1,26 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, Card, CardMedia, CardContent, Typography } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  CardActions,
+  Button,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import Navbar from "../components/Navbar";
 import axios from "axios";
+import Navbar from "../components/Navbar";
 
 const AdoptAPetPage = () => {
   const theme = useTheme();
-  const [pets, setPets] = useState([]); // This will hold the fetched pet data
+  const [pets, setPets] = useState([]);
 
-  // Fetch adoption pets from the backend
+  // Assume current user info is stored in localStorage
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const currentUserId = currentUser?._id;
+
+  // 1) Fetch adoption pets from backend
   useEffect(() => {
     const fetchPets = async () => {
       try {
         const token = localStorage.getItem("token");
-        // NOTE: Adjust the URL to your server's address/endpoint
         const res = await axios.get("http://localhost:5000/api/adoption", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        // The backend might return something like:
-        // { success: true, pets: [...petObjects...] }
-        // So we read res.data.pets if res.data.success is true
         if (res.data && res.data.success && Array.isArray(res.data.pets)) {
           setPets(res.data.pets);
         } else {
@@ -30,9 +38,52 @@ const AdoptAPetPage = () => {
         console.error("Error fetching adoption pets:", error);
       }
     };
-
     fetchPets();
   }, []);
+
+  // 2) Handler: Mark as Adopted
+  const handleMarkAsAdopted = async (petId) => {
+    try {
+      const token = localStorage.getItem("token");
+      // Example PUT endpoint => /api/adoption/:id/status
+      // Or use a single PUT route that updates the pet
+      await axios.put(
+        `http://localhost:5000/api/adoption/${petId}/status`,
+        { status: "Adopted" },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      // Re-fetch or update local state
+      setPets((prev) =>
+        prev.map((p) =>
+          p._id === petId ? { ...p, status: "Adopted" } : p
+        )
+      );
+    } catch (error) {
+      console.error("Error marking as adopted:", error);
+    }
+  };
+
+  // 3) Handler: Remove (delete) listing
+  const handleRemoveListing = async (petId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5000/api/adoption/${petId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Remove from local state
+      setPets((prev) => prev.filter((p) => p._id !== petId));
+    } catch (error) {
+      console.error("Error deleting pet listing:", error);
+    }
+  };
+
+  // 4) Handler: "Interested" => (In real life, might message the owner)
+  const handleInterested = (pet) => {
+    alert(`You are interested in adopting ${pet.name}!\n\nContact:\n• Email: ${pet.contactEmail}\n• Phone: ${pet.contactPhone}`);
+    // Or open a message dialog, etc.
+  };
 
   return (
     <>
@@ -70,10 +121,6 @@ const AdoptAPetPage = () => {
                   },
                 }}
               >
-                {/* 
-                  If your backend stores a direct Cloudinary image URL in pet.image, 
-                  use that directly. Otherwise, you can fall back to a placeholder. 
-                */}
                 <CardMedia
                   component="img"
                   height="200"
@@ -92,10 +139,56 @@ const AdoptAPetPage = () => {
                     <br />
                     Location: {pet.location}
                     <br />
-                    {/* If you stored any additional fields like breed, reason, etc. */}
+                    Status: {pet.status}
+                    <br />
                     Reason: {pet.reason}
+                    <br />
+                    Contact:
+                    <br />• {pet.contactEmail}
+                    <br />• {pet.contactPhone}
                   </Typography>
                 </CardContent>
+
+                {/* Action buttons */}
+                <CardActions sx={{ justifyContent: "space-between" }}>
+                  {/* If status is "Adopted", we can hide or disable the buttons: */}
+                  {pet.status === "Adopted" ? (
+                    <Typography variant="body2" color="error">
+                      (Adopted)
+                    </Typography>
+                  ) : (
+                    <>
+                      {/* Show "Interested" if the current user is not the owner */}
+                      {pet.createdBy?._id !== currentUserId ? (
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => handleInterested(pet)}
+                        >
+                          Interested
+                        </Button>
+                      ) : (
+                        // Otherwise show "Mark as Adopted" or "Remove"
+                        <>
+                          <Button
+                            variant="contained"
+                            color="success"
+                            onClick={() => handleMarkAsAdopted(pet._id)}
+                          >
+                            Mark as Adopted
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => handleRemoveListing(pet._id)}
+                          >
+                            Remove
+                          </Button>
+                        </>
+                      )}
+                    </>
+                  )}
+                </CardActions>
               </Card>
             </Grid>
           ))}

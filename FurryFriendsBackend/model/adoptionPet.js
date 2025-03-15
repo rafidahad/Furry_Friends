@@ -19,6 +19,11 @@ const adoptionPetSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["Available", "Adopted"],
+      default: "Available",
+    },
   },
   { timestamps: true }
 );

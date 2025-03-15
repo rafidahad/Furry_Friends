@@ -1,40 +1,37 @@
+// controllers/adoptionController.js
 import AdoptionPet from "../model/adoptionPet.js";
 
-/**
- * Add a New Pet for Adoption
- * POST /api/adoption
- */
+// -- Create a new listing
 export const addAdoptionPet = async (req, res) => {
   try {
-    // Because we're using Multer + Cloudinary,
-    // the uploaded file's Cloudinary URL is in `req.file.path`.
-    // The rest of fields come from req.body
-    const { name, type, age, location, reason, contactEmail, contactPhone } =
-      req.body;
+    const {
+      name,
+      type,
+      age,
+      location,
+      image,
+      reason,
+      contactEmail,
+      contactPhone,
+    } = req.body;
 
-    const userId = req.user.id; // The ID of the currently logged-in user
-
-    // If we used the Cloudinary storage config, the final image URL is at req.file.path
-    let imageUrl = "";
-    if (req.file && req.file.path) {
-      imageUrl = req.file.path; // This is the Cloudinary URL
-    }
+    const userId = req.user.id; // from JWT
 
     const newPet = new AdoptionPet({
       name,
       type,
       age,
       location,
-      image: imageUrl,
+      image,
       reason,
       contactEmail,
       contactPhone,
       createdBy: userId,
+      status: "Available",
     });
 
     await newPet.save();
-
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
       message: "Pet listed for adoption!",
       pet: newPet,
@@ -47,7 +44,7 @@ export const addAdoptionPet = async (req, res) => {
   }
 };
 
-// Get All Adoption Pets
+// -- Fetch all listings
 export const getAllAdoptionPets = async (req, res) => {
   try {
     const pets = await AdoptionPet.find().populate(
@@ -63,16 +60,16 @@ export const getAllAdoptionPets = async (req, res) => {
   }
 };
 
-// Get a Single Pet by ID
+// -- Fetch single listing by ID
 export const getAdoptionPetById = async (req, res) => {
   try {
     const pet = await AdoptionPet.findById(req.params.id).populate(
       "createdBy",
       "username email"
     );
-    if (!pet)
+    if (!pet) {
       return res.status(404).json({ success: false, message: "Pet not found" });
-
+    }
     res.status(200).json({ success: true, pet });
   } catch (error) {
     console.error("Error fetching pet details:", error);
@@ -82,18 +79,49 @@ export const getAdoptionPetById = async (req, res) => {
   }
 };
 
-// Delete a Pet Listing (Only Owner Can Delete)
+// -- Mark as Adopted (instead of deleting)
+export const markPetAsAdopted = async (req, res) => {
+  try {
+    const pet = await AdoptionPet.findById(req.params.id);
+    if (!pet) {
+      return res.status(404).json({ success: false, message: "Pet not found" });
+    }
+
+    // Only the user who created the listing can mark it as adopted
+    if (pet.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Update the status
+    pet.status = "Adopted";
+    await pet.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Pet marked as adopted", pet });
+  } catch (error) {
+    console.error("Error marking as adopted:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error marking as adopted", error });
+  }
+};
+
+// -- Delete listing entirely
 export const deleteAdoptionPet = async (req, res) => {
   try {
     const pet = await AdoptionPet.findById(req.params.id);
-    if (!pet)
+    if (!pet) {
       return res.status(404).json({ success: false, message: "Pet not found" });
+    }
 
     if (pet.createdBy.toString() !== req.user.id) {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
+    // Remove from DB
     await pet.deleteOne();
+
     res
       .status(200)
       .json({ success: true, message: "Pet removed successfully" });

@@ -11,6 +11,7 @@ import vetRoutes from "./routes/vetRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import userRoutes from "./routes/userRouters.js";
 import adoptionRoutes from "./routes/adoptionRoutes.js"; // ✅ Added adoption route
+import petShopRoutes from "./routes/petShopRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +32,7 @@ app.use("/vets", vetRoutes);
 app.use("/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/adoption", adoptionRoutes); // ✅ Register adoption route
+app.use("/petshops", petShopRoutes);
 
 // Health Check Route (Useful for debugging)
 app.get("/", (req, res) => {

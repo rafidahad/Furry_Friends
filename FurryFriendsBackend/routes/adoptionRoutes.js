@@ -4,6 +4,7 @@ import {
   getAllAdoptionPets,
   getAdoptionPetById,
   deleteAdoptionPet,
+  markPetAsAdopted,
 } from "../controllers/adoptionController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 import { uploadAdoptionPetImage } from "../middlewares/upload.js";
@@ -23,7 +24,7 @@ router.get("/", getAllAdoptionPets);
 
 // GET /api/adoption/:id
 router.get("/:id", getAdoptionPetById);
-
+router.put("/:id/adopt", protect, markPetAsAdopted);
 // DELETE /api/adoption/:id
 router.delete("/:id", protect, deleteAdoptionPet);
 
