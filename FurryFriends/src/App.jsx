@@ -26,7 +26,7 @@ import Rabbits from "./pages/PetTopics/Rabbits";
 import Reptiles from "./pages/PetTopics/Reptiles";
 // If you have Others.jsx, import that too
 // import Others from "./pages/PetTopics/Others";
-
+import PetAccessories from "./pages/PetAccessories";
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -125,6 +125,7 @@ const App = () => {
               path="/others"
               element={<Others toggleTheme={toggleTheme} darkMode={darkMode} />}
             /> */}
+            <Route path="/pet-accessories" element={<PetAccessories />} />
           </Route>
         </Routes>
       </Router>
