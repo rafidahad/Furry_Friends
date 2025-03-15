@@ -31,6 +31,16 @@ const videoStorage = new CloudinaryStorage({
     resource_type: "video",
   },
 });
+const adoptionPetStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "furry_friends/adoption_pets", // folder in Cloudinary
+    allowed_formats: ["jpg", "jpeg", "png"],
+    resource_type: "image",
+  },
+});
+
+export const uploadAdoptionPetImage = multer({ storage: adoptionPetStorage });
 
 // ✅ Export all upload configurations
 export const uploadProfilePicture = multer({ storage: profilePictureStorage });

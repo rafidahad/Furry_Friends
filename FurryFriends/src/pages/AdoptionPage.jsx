@@ -1,45 +1,105 @@
-// src/pages/AdoptionPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import Navbar from "../components/Navbar"; // Your updated MUI Navbar
+import axios from "axios";
+import Navbar from "../components/Navbar";
 
 import Adoption2 from "../Assets/adoptionMe.png";
 import Adoption3 from "../Assets/adoption.png";
 
 const AdoptionPage = () => {
   const navigate = useNavigate();
-  const theme = useTheme();    // Access MUI theme (for dark mode)
-  const [selectedOption, setSelectedOption] = useState(null);
+  const theme = useTheme();
+  const [pets, setPets] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    age: "",
+    location: "",
+    type: "Dog",
+    reason: "",
+    contactEmail: "",
+    contactPhone: "",
+    image: null,
+  });
 
-  // Updated: Navigate to "/adopt_a_pet" when the button is clicked.
-  const handleFindPetClick = () => {
-    navigate("/adopt_a_pet");
+  // Fetch existing pets
+  useEffect(() => {
+    const fetchPets = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:5000/api/adoption", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        // Our backend returns { success: true, pets: [...] }
+        setPets(res.data.pets || []);
+      } catch (error) {
+        console.error("Error fetching adoption pets:", error);
+      }
+    };
+    fetchPets();
+  }, []);
+
+  // Handle text inputs
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmitPetClick = () => {
-    navigate("/home");
+  // Handle file input
+  const handleFileChange = (e) => {
+    setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
+  };
+
+  // Submit new pet
+  const handleSubmitPet = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You must log in first!");
+        return;
+      }
+      const petData = new FormData();
+      petData.append("name", formData.name);
+      petData.append("age", formData.age);
+      petData.append("location", formData.location);
+      petData.append("type", formData.type);
+      petData.append("reason", formData.reason);
+      petData.append("contactEmail", formData.contactEmail);
+      petData.append("contactPhone", formData.contactPhone);
+      petData.append("image", formData.image);
+
+      await axios.post("http://localhost:5000/api/adoption", petData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("Pet submitted for adoption!");
+      navigate("/home");
+    } catch (err) {
+      console.error("Error submitting pet:", err);
+      alert("Failed to submit pet. Please try again.");
+    }
   };
 
   return (
     <>
-      {/* Navbar: search bar hidden */}
       <Navbar showSearch={false} />
-
-      {/* MUI Box to apply theme's background & text color */}
       <Box
         sx={{
           minHeight: "100vh",
           backgroundColor: theme.palette.background.default,
           color: theme.palette.text.primary,
-          pt: "80px", // Offset for fixed navbar (adjust as needed)
+          pt: "80px",
         }}
       >
         <div className="container py-5">
           <div className="row">
-            {/* Left Column: Adopt a Pet */}
+            {/* Left Column */}
             <div
               className="col-md-6 p-4 border rounded shadow"
               style={{
@@ -58,37 +118,32 @@ const AdoptionPage = () => {
                 />
               </div>
               <p className="text-center">
-                Welcome to our pet adoption program! Adopting a pet brings joy
-                and companionship into your life.
+                Welcome to our pet adoption program! 
+                Adopting a pet brings joy and companionship into your life.
               </p>
-              <h5 className="fw-bold text-primary">Benefits of Pet Adoption</h5>
-              <ul>
-                <li>Provide a loving home to a pet in need</li>
-                <li>Experience unconditional love</li>
-                <li>Create lasting memories</li>
-              </ul>
-              <h5 className="fw-bold text-primary">Adoption Process</h5>
-              <ul>
-                <li>Fill out an adoption application</li>
-                <li>Meet potential pets in person</li>
-                <li>Complete necessary paperwork</li>
-              </ul>
-              <h5 className="fw-bold text-primary">Responsibilities</h5>
-              <p>
-                Adopting a pet comes with responsibilities, including feeding,
-                grooming, regular exercise, and medical care.
-              </p>
+              <h5 className="fw-bold text-primary">Available Pets</h5>
+              {pets.length > 0 ? (
+                <ul>
+                  {pets.map((pet) => (
+                    <li key={pet._id}>
+                      {pet.name} - {pet.type} ({pet.age} years) - {pet.location}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No pets available for adoption.</p>
+              )}
               <div className="text-center">
                 <button
                   className="btn btn-primary text-white"
-                  onClick={handleFindPetClick}
+                  onClick={() => navigate("/adopt_a_pet")}
                 >
                   Find Your Perfect Pet
                 </button>
               </div>
             </div>
 
-            {/* Right Column: Post a Pet for Adoption */}
+            {/* Right Column */}
             <div
               className="col-md-6 p-4 border rounded shadow"
               style={{
@@ -108,13 +163,15 @@ const AdoptionPage = () => {
                   width="300"
                 />
               </div>
-              <form>
+              <form onSubmit={handleSubmitPet}>
                 <div className="mb-3">
                   <label className="form-label">Pet Name:</label>
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Enter pet's name"
+                    name="name"
+                    onChange={handleChange}
+                    required
                   />
                 </div>
 
@@ -123,13 +180,20 @@ const AdoptionPage = () => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Enter pet's age"
+                    name="age"
+                    onChange={handleChange}
+                    required
                   />
                 </div>
 
                 <div className="mb-3">
                   <label className="form-label">Picture:</label>
-                  <input type="file" className="form-control" />
+                  <input
+                    type="file"
+                    className="form-control"
+                    onChange={handleFileChange}
+                    required
+                  />
                 </div>
 
                 <div className="mb-3">
@@ -137,13 +201,20 @@ const AdoptionPage = () => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Enter location"
+                    name="location"
+                    onChange={handleChange}
+                    required
                   />
                 </div>
 
                 <div className="mb-3">
                   <label className="form-label">Type:</label>
-                  <select className="form-select">
+                  <select
+                    className="form-select"
+                    name="type"
+                    onChange={handleChange}
+                    required
+                  >
                     <option value="Dog">Dog</option>
                     <option value="Cat">Cat</option>
                     <option value="Bird">Bird</option>
@@ -160,7 +231,9 @@ const AdoptionPage = () => {
                   <textarea
                     className="form-control"
                     rows="3"
-                    placeholder="Explain why you are giving this pet for adoption"
+                    name="reason"
+                    onChange={handleChange}
+                    required
                   ></textarea>
                 </div>
 
@@ -170,7 +243,9 @@ const AdoptionPage = () => {
                   <input
                     type="email"
                     className="form-control"
-                    placeholder="Enter your email"
+                    name="contactEmail"
+                    onChange={handleChange}
+                    required
                   />
                 </div>
 
@@ -179,16 +254,14 @@ const AdoptionPage = () => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Enter your phone number"
+                    name="contactPhone"
+                    onChange={handleChange}
+                    required
                   />
                 </div>
 
                 <div className="text-center">
-                  <button
-                    type="button"
-                    className="btn btn-primary text-white"
-                    onClick={handleSubmitPetClick}
-                  >
+                  <button type="submit" className="btn btn-primary text-white">
                     Submit Your Pet
                   </button>
                 </div>
