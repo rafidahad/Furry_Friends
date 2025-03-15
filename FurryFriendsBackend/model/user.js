@@ -42,6 +42,14 @@ const userSchema = new Schema(
     settings: {
       notifications: { type: Boolean, default: true },
     },
+    messages: [
+      {
+        sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        message: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );

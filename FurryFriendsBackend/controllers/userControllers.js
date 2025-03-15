@@ -114,6 +114,54 @@ export const getProfile = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username })
+      .populate("followers", "username profile.profilePicture")
+      .populate("following", "username profile.profilePicture");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * ✅ Toggle Follow/Unfollow User
+ * @route   POST /auth/follow/:id
+ */
+export const toggleFollow = async (req, res) => {
+  try {
+    const userToFollow = await User.findById(req.params.id);
+    const currentUser = await User.findById(req.user.id);
+    if (!userToFollow || !currentUser)
+      return res.status(404).json({ message: "User not found" });
+    const isFollowing = currentUser.following.includes(userToFollow._id);
+    if (isFollowing) {
+      currentUser.following = currentUser.following.filter(
+        (id) => id.toString() !== userToFollow._id.toString()
+      );
+      userToFollow.followers = userToFollow.followers.filter(
+        (id) => id.toString() !== currentUser._id.toString()
+      );
+    } else {
+      currentUser.following.push(userToFollow._id);
+      userToFollow.followers.push(currentUser._id);
+    }
+    await currentUser.save();
+    await userToFollow.save();
+    res.status(200).json({
+      message: isFollowing
+        ? "Unfollowed successfully."
+        : "Followed successfully.",
+      following: currentUser.following,
+    });
+  } catch (error) {
+    console.error("Follow Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 
 /**

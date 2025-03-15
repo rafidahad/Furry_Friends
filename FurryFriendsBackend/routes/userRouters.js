@@ -1,28 +1,32 @@
 import { Router } from "express";
 import {
   createUser,
-  getAllUsers,
-  getUserById,
+
+
   updateUser,
   deleteUser,
-} from "../controllers/userControllers.js";
-import { protect } from "../middlewares/authMiddleware.js"; // ✅ Protect routes
+  getUserProfile,
+  toggleFollow,
+} from "../controllers/userControllers.js"; // ensure these names match
+import { protect } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
-// ✅ Signup a new user (PUBLIC)
+// Public route for signup
 router.post("/", createUser);
 
-// ✅ Fetch all users (ADMIN ONLY - Implement Role-based access later)
-router.get("/", protect, getAllUsers);
 
-// ✅ Fetch a single user by ID (PRIVATE)
-router.get("/:id", protect, getUserById);
 
-// ✅ Update authenticated user's profile (PRIVATE)
-router.put("/profile", protect, updateUser); // 🔹 Changed from "/:id" to "/profile"
+// IMPORTANT: Place the specific profile route *before* the generic :id route
+router.get("/profile/:username", protect, getUserProfile);
 
-// ✅ Delete authenticated user (PRIVATE)
+
+
+// Update & delete routes
+router.put("/profile", protect, updateUser);
 router.delete("/:id", protect, deleteUser);
+
+// Follow/unfollow route
+router.post("/follow/:id", protect, toggleFollow);
 
 export default router;

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { 
   Box, Card, CardHeader, CardContent, Avatar, IconButton, Typography, TextField, Button 
 } from "@mui/material";
+import { Link } from "react-router-dom"; // Import Link
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
@@ -30,22 +31,18 @@ const timeAgo = (date) => {
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
-  // State to control comment input visibility and text per post
   const [commentBoxOpen, setCommentBoxOpen] = useState({});
   const [newCommentText, setNewCommentText] = useState({});
-  
   const theme = useTheme();
   
-  // Assume the current user id is stored in localStorage (or adjust as needed)
+  // Assume current user is stored in localStorage
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const currentUserId = currentUser?._id || localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // Adjust this endpoint if needed. It should return an array of posts.
         const response = await api.get("/posts/random");
-        // Optionally sort posts by some criteria here
         setPosts(response.data);
       } catch (error) {
         console.error("Error fetching posts:", error);
@@ -54,7 +51,6 @@ const Feed = () => {
     fetchPosts();
   }, []);
 
-  // Handle like functionality
   const handleLike = async (postId) => {
     try {
       await api.put(`/posts/like/${postId}`);
@@ -75,17 +71,14 @@ const Feed = () => {
     }
   };
 
-  // Toggle comment box visibility
   const handleCommentToggle = (postId) => {
     setCommentBoxOpen((prev) => ({ ...prev, [postId]: !prev[postId] }));
   };
 
-  // Handle comment text change
   const handleCommentChange = (postId, value) => {
     setNewCommentText((prev) => ({ ...prev, [postId]: value }));
   };
 
-  // Add a new comment
   const handleAddComment = async (postId) => {
     const text = newCommentText[postId]?.trim();
     if (!text) return;
@@ -112,11 +105,14 @@ const Feed = () => {
         return (
           <Card key={post._id} sx={{ mb: 2 }}>
             <CardHeader
+              // Wrap the Avatar with Link to navigate to the user's profile
               avatar={
-                <Avatar
-                  src={post.user?.profile?.profilePicture || ""}
-                  alt={post.user?.username || "User"}
-                />
+                <Link to={`/user/${post.user?.username}`}>
+                  <Avatar
+                    src={post.user?.profile?.profilePicture || ""}
+                    alt={post.user?.username || "User"}
+                  />
+                </Link>
               }
               title={post.title || "Untitled Post"}
               subheader={`Posted by ${post.user?.username || "Unknown"} • ${timeAgo(post.createdAt)}`}
@@ -150,11 +146,7 @@ const Feed = () => {
             </CardContent>
             <Box sx={{ display: "flex", alignItems: "center", p: 1, pl: 2 }}>
               <IconButton onClick={() => handleLike(post._id)}>
-                {isLikedByUser ? (
-                  <FavoriteIcon sx={{ color: "red" }} />
-                ) : (
-                  <FavoriteBorderIcon />
-                )}
+                {isLikedByUser ? <FavoriteIcon sx={{ color: "red" }} /> : <FavoriteBorderIcon />}
               </IconButton>
               <Typography variant="body2" sx={{ mr: 3 }}>
                 {post.likes?.length || 0}
